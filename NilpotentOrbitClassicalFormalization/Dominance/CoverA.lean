@@ -89,183 +89,135 @@ lemma isCoverBoxDrop_isBoxDrop {n : ℕ} {lam mu : Nat.Partition n}
 
 lemma exists_isCoverBoxDrop_between_of_lt {n : ℕ} {mu lam : Nat.Partition n}
     (h : mu < lam) :
-    ∃ nu : Nat.Partition n, IsCoverBoxDrop lam nu ∧ mu ≤ nu ∧ nu ≤ lam ∧ nu ≠ lam := by
+  ∃ nu : Nat.Partition n, IsCoverBoxDrop lam nu ∧ mu ≤ nu ∧ nu ≤ lam ∧ nu ≠ lam := by
   classical
-  rcases exists_first_rowLen_lt_of_lt h with ⟨i0, hbefore, hstrict⟩
-  let targetExists := exists_drop_target_of_first_row (mu := mu) (lam := lam)
-    hbefore hstrict
-  let j := Nat.find targetExists
-  have hj_spec : i0 < j ∧ lam.rowLen j + 1 < lam.rowLen i0 :=
-    Nat.find_spec targetExists
-  have hi0j : i0 < j := hj_spec.1
-  have hjgap_i0 : lam.rowLen j + 1 < lam.rowLen i0 := hj_spec.2
-  have hnoDrop :
-      ∀ r : ℕ, i0 ≤ r → r < j → ¬lam.rowLen r + 1 < lam.rowLen i0 := by
-    intro r hi0r hrj hdrop
-    rcases eq_or_lt_of_le hi0r with rfl | hi0r_lt
-    · omega
-    · exact Nat.find_min targetExists hrj ⟨hi0r_lt, hdrop⟩
-  have hrowBefore : ∀ r : ℕ, r < j → mu.rowLen r ≤ lam.rowLen r :=
-    rowLen_mu_le_lam_before_target hbefore hstrict hnoDrop
-  by_cases hexact : lam.rowLen j + 2 = lam.rowLen i0
-  · have hjdrop : lam.rowLen j < lam.rowLen i0 := by omega
-    rcases exists_plateau_source lam hi0j hjdrop with
-      ⟨s, hi0s, hsj, hsrow, hsource⟩
-    have htarget : lam.rowLen j < lam.rowLen (j - 1) := by
-      have hjpos : 0 < j := lt_of_le_of_lt (Nat.zero_le i0) hi0j
-      have hi0pred : i0 ≤ j - 1 := Nat.le_sub_one_of_lt hi0j
-      have hpred_lt : j - 1 < j := Nat.sub_one_lt_of_lt hjpos
-      have hnopred := hnoDrop (j - 1) hi0pred hpred_lt
-      have hlower : lam.rowLen i0 ≤ lam.rowLen (j - 1) + 1 := le_of_not_gt hnopred
-      omega
-    have hgap : lam.rowLen j + 1 < lam.rowLen s := by
-      rw [hsrow]
-      exact hjgap_i0
-    let nu := boxDropPartition lam hsj hsource htarget hgap
+  rcases nonempty_firstDropData_of_lt h with ⟨D⟩
+  by_cases hexact : lam.rowLen D.j + 2 = lam.rowLen D.i0
+  · rcases nonempty_plateauSourceData lam D.hi0j
+      (lt_trans (Nat.lt_succ_self _) D.hgap_i0) with ⟨S⟩
+    have htarget : lam.rowLen D.j < lam.rowLen (D.j - 1) := D.rowLen_j_lt_pred
+    have hgap : lam.rowLen D.j + 1 < lam.rowLen S.s := by
+      rw [S.hsrow]
+      exact D.hgap_i0
+    let nu := boxDropPartition lam S.hsj S.hsource htarget hgap
     have hmu_le_nu : mu ≤ nu :=
-      le_boxDropPartition_of_prefix_surplus hsj hsource htarget hgap h.1
-        (prefix_surplus_of_rowLen_le_before_target hi0s hrowBefore hstrict)
+      le_boxDropPartition_of_prefix_surplus S.hsj S.hsource htarget hgap h.1
+        (prefix_surplus_of_rowLen_le_before_target S.hi0s D.hrowBefore D.hstrict)
     have hnu_le_lam : nu ≤ lam :=
-      boxDropPartition_le_original lam hsj hsource htarget hgap
+      boxDropPartition_le_original lam S.hsj S.hsource htarget hgap
     have hnu_ne_lam : nu ≠ lam := by
       intro hEq
-      have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen s) hEq
-      change (boxDropPartition lam hsj hsource htarget hgap).rowLen s = lam.rowLen s at hroweq
-      rw [rowLen_boxDropPartition lam hsj hsource htarget hgap] at hroweq
+      have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen S.s) hEq
+      change (boxDropPartition lam S.hsj S.hsource htarget hgap).rowLen S.s =
+        lam.rowLen S.s at hroweq
+      rw [rowLen_boxDropPartition lam S.hsj S.hsource htarget hgap] at hroweq
       simp at hroweq
-      have hpos : 0 < lam.rowLen s := by omega
+      have hpos : 0 < lam.rowLen S.s := by omega
       omega
     refine ⟨nu, ?_, hmu_le_nu, hnu_le_lam, hnu_ne_lam⟩
-    refine ⟨s, j, hsj, hsource, htarget, hgap, ?_, rfl⟩
+    refine ⟨S.s, D.j, S.hsj, S.hsource, htarget, hgap, ?_, rfl⟩
     right
-    omega
-  · have hjpos : 0 < j := lt_of_le_of_lt (Nat.zero_le i0) hi0j
-    have hst : j - 1 < j := Nat.sub_one_lt_of_lt hjpos
-    have hi0pred : i0 ≤ j - 1 := Nat.le_sub_one_of_lt hi0j
-    have hnopred := hnoDrop (j - 1) hi0pred hst
-    have hlower : lam.rowLen i0 ≤ lam.rowLen (j - 1) + 1 := le_of_not_gt hnopred
-    have hjgap_large : lam.rowLen j + 2 < lam.rowLen i0 := by
-      have hle : lam.rowLen j + 2 ≤ lam.rowLen i0 := by omega
-      exact lt_of_le_of_ne hle hexact
-    have hsource : lam.rowLen ((j - 1) + 1) < lam.rowLen (j - 1) := by
-      have hjpred : (j - 1) + 1 = j := Nat.sub_add_cancel hjpos
+    rw [S.hsrow]
+    exact hexact
+  · have hst : D.j - 1 < D.j := D.pred_lt_j
+    have hlower : lam.rowLen D.i0 ≤ lam.rowLen (D.j - 1) + 1 :=
+      D.rowLen_i0_le_pred_add_one
+    have hjgap_large : lam.rowLen D.j + 2 < lam.rowLen D.i0 := by
+      exact lt_of_le_of_ne (Nat.succ_le_of_lt D.hgap_i0) hexact
+    have hsource : lam.rowLen ((D.j - 1) + 1) < lam.rowLen (D.j - 1) := by
+      have hjpred : (D.j - 1) + 1 = D.j := Nat.sub_add_cancel D.j_pos
       rw [hjpred]
       omega
-    have htarget : lam.rowLen j < lam.rowLen (j - 1) := by
+    have htarget : lam.rowLen D.j < lam.rowLen (D.j - 1) := by
       omega
-    have hgap : lam.rowLen j + 1 < lam.rowLen (j - 1) := by
+    have hgap : lam.rowLen D.j + 1 < lam.rowLen (D.j - 1) := by
       omega
     let nu := boxDropPartition lam hst hsource htarget hgap
     have hmu_le_nu : mu ≤ nu :=
       le_boxDropPartition_of_prefix_surplus hst hsource htarget hgap h.1
-        (prefix_surplus_of_rowLen_le_before_target hi0pred hrowBefore hstrict)
+        (prefix_surplus_of_rowLen_le_before_target D.i0_le_pred D.hrowBefore D.hstrict)
     have hnu_le_lam : nu ≤ lam :=
       boxDropPartition_le_original lam hst hsource htarget hgap
     have hnu_ne_lam : nu ≠ lam := by
       intro hEq
-      have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen (j - 1)) hEq
-      change (boxDropPartition lam hst hsource htarget hgap).rowLen (j - 1) =
-        lam.rowLen (j - 1) at hroweq
+      have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen (D.j - 1)) hEq
+      change (boxDropPartition lam hst hsource htarget hgap).rowLen (D.j - 1) =
+        lam.rowLen (D.j - 1) at hroweq
       rw [rowLen_boxDropPartition lam hst hsource htarget hgap] at hroweq
       simp at hroweq
-      have hpos : 0 < lam.rowLen (j - 1) := by omega
+      have hpos : 0 < lam.rowLen (D.j - 1) := by omega
       omega
     refine ⟨nu, ?_, hmu_le_nu, hnu_le_lam, hnu_ne_lam⟩
-    refine ⟨j - 1, j, hst, hsource, htarget, hgap, ?_, rfl⟩
+    refine ⟨D.j - 1, D.j, hst, hsource, htarget, hgap, ?_, rfl⟩
     left
-    exact (Nat.sub_add_cancel hjpos).symm
+    exact (Nat.sub_add_cancel D.j_pos).symm
 
 /-- A dominance cover is one of the canonical one-box drops. -/
 theorem isCoverBoxDrop_of_covBy {n : ℕ} {mu lam : Nat.Partition n} (h : mu ⋖ lam) :
     IsCoverBoxDrop lam mu := by
   classical
-  rcases exists_first_rowLen_lt_of_lt h.lt with ⟨i0, hbefore, hstrict⟩
-  let targetExists := exists_drop_target_of_first_row (mu := mu) (lam := lam)
-    hbefore hstrict
-  let j := Nat.find targetExists
-  have hj_spec : i0 < j ∧ lam.rowLen j + 1 < lam.rowLen i0 :=
-    Nat.find_spec targetExists
-  have hi0j : i0 < j := hj_spec.1
-  have hjgap_i0 : lam.rowLen j + 1 < lam.rowLen i0 := hj_spec.2
-  have hnoDrop :
-      ∀ r : ℕ, i0 ≤ r → r < j → ¬lam.rowLen r + 1 < lam.rowLen i0 := by
-    intro r hi0r hrj hdrop
-    rcases eq_or_lt_of_le hi0r with rfl | hi0r_lt
-    · omega
-    · exact Nat.find_min targetExists hrj ⟨hi0r_lt, hdrop⟩
-  have hrowBefore : ∀ r : ℕ, r < j → mu.rowLen r ≤ lam.rowLen r :=
-    rowLen_mu_le_lam_before_target hbefore hstrict hnoDrop
-  by_cases hexact : lam.rowLen j + 2 = lam.rowLen i0
-  · have hjdrop : lam.rowLen j < lam.rowLen i0 := by omega
-    rcases exists_plateau_source lam hi0j hjdrop with
-      ⟨s, hi0s, hsj, hsrow, hsource⟩
-    have htarget : lam.rowLen j < lam.rowLen (j - 1) := by
-      have hjpos : 0 < j := lt_of_le_of_lt (Nat.zero_le i0) hi0j
-      have hi0pred : i0 ≤ j - 1 := Nat.le_sub_one_of_lt hi0j
-      have hpred_lt : j - 1 < j := Nat.sub_one_lt_of_lt hjpos
-      have hnopred := hnoDrop (j - 1) hi0pred hpred_lt
-      have hlower : lam.rowLen i0 ≤ lam.rowLen (j - 1) + 1 := le_of_not_gt hnopred
-      omega
-    have hgap : lam.rowLen j + 1 < lam.rowLen s := by
-      rw [hsrow]
-      exact hjgap_i0
+  rcases nonempty_firstDropData_of_lt h.lt with ⟨D⟩
+  by_cases hexact : lam.rowLen D.j + 2 = lam.rowLen D.i0
+  · rcases nonempty_plateauSourceData lam D.hi0j
+      (lt_trans (Nat.lt_succ_self _) D.hgap_i0) with ⟨S⟩
+    have htarget : lam.rowLen D.j < lam.rowLen (D.j - 1) := D.rowLen_j_lt_pred
+    have hgap : lam.rowLen D.j + 1 < lam.rowLen S.s := by
+      rw [S.hsrow]
+      exact D.hgap_i0
     have hmu_le_nu :
-        mu ≤ boxDropPartition lam hsj hsource htarget hgap :=
-      le_boxDropPartition_of_prefix_surplus hsj hsource htarget hgap h.le
-        (prefix_surplus_of_rowLen_le_before_target hi0s hrowBefore hstrict)
+        mu ≤ boxDropPartition lam S.hsj S.hsource htarget hgap :=
+      le_boxDropPartition_of_prefix_surplus S.hsj S.hsource htarget hgap h.le
+        (prefix_surplus_of_rowLen_le_before_target S.hi0s D.hrowBefore D.hstrict)
     have hnu_le_lam :
-        boxDropPartition lam hsj hsource htarget hgap ≤ lam :=
-      boxDropPartition_le_original lam hsj hsource htarget hgap
-    have hnu_ne_lam : boxDropPartition lam hsj hsource htarget hgap ≠ lam := by
+        boxDropPartition lam S.hsj S.hsource htarget hgap ≤ lam :=
+      boxDropPartition_le_original lam S.hsj S.hsource htarget hgap
+    have hnu_ne_lam : boxDropPartition lam S.hsj S.hsource htarget hgap ≠ lam := by
       intro hEq
-      have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen s) hEq
-      change (boxDropPartition lam hsj hsource htarget hgap).rowLen s = lam.rowLen s at hroweq
-      rw [rowLen_boxDropPartition lam hsj hsource htarget hgap] at hroweq
+      have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen S.s) hEq
+      change (boxDropPartition lam S.hsj S.hsource htarget hgap).rowLen S.s =
+        lam.rowLen S.s at hroweq
+      rw [rowLen_boxDropPartition lam S.hsj S.hsource htarget hgap] at hroweq
       simp at hroweq
-      have hpos : 0 < lam.rowLen s := by omega
+      have hpos : 0 < lam.rowLen S.s := by omega
       omega
-    rcases h.eq_or_eq hmu_le_nu hnu_le_lam with hnu_eq_mu | hnu_eq_lam
-    · refine ⟨s, j, hsj, hsource, htarget, hgap, ?_, hnu_eq_mu.symm⟩
-      right
-      omega
-    · exact False.elim (hnu_ne_lam hnu_eq_lam)
-  · have hjpos : 0 < j := lt_of_le_of_lt (Nat.zero_le i0) hi0j
-    have hst : j - 1 < j := Nat.sub_one_lt_of_lt hjpos
-    have hi0pred : i0 ≤ j - 1 := Nat.le_sub_one_of_lt hi0j
-    have hnopred := hnoDrop (j - 1) hi0pred hst
-    have hlower : lam.rowLen i0 ≤ lam.rowLen (j - 1) + 1 := le_of_not_gt hnopred
-    have hjgap_large : lam.rowLen j + 2 < lam.rowLen i0 := by
-      have hle : lam.rowLen j + 2 ≤ lam.rowLen i0 := by omega
-      exact lt_of_le_of_ne hle hexact
-    have hsource : lam.rowLen ((j - 1) + 1) < lam.rowLen (j - 1) := by
-      have hjpred : (j - 1) + 1 = j := Nat.sub_add_cancel hjpos
+    refine ⟨S.s, D.j, S.hsj, S.hsource, htarget, hgap, ?_,
+      (eq_of_between h hmu_le_nu hnu_le_lam hnu_ne_lam).symm⟩
+    right
+    rw [S.hsrow]
+    exact hexact
+  · have hst : D.j - 1 < D.j := D.pred_lt_j
+    have hlower : lam.rowLen D.i0 ≤ lam.rowLen (D.j - 1) + 1 :=
+      D.rowLen_i0_le_pred_add_one
+    have hjgap_large : lam.rowLen D.j + 2 < lam.rowLen D.i0 := by
+      exact lt_of_le_of_ne (Nat.succ_le_of_lt D.hgap_i0) hexact
+    have hsource : lam.rowLen ((D.j - 1) + 1) < lam.rowLen (D.j - 1) := by
+      have hjpred : (D.j - 1) + 1 = D.j := Nat.sub_add_cancel D.j_pos
       rw [hjpred]
       omega
-    have htarget : lam.rowLen j < lam.rowLen (j - 1) := by
+    have htarget : lam.rowLen D.j < lam.rowLen (D.j - 1) := by
       omega
-    have hgap : lam.rowLen j + 1 < lam.rowLen (j - 1) := by
+    have hgap : lam.rowLen D.j + 1 < lam.rowLen (D.j - 1) := by
       omega
     have hmu_le_nu :
         mu ≤ boxDropPartition lam hst hsource htarget hgap :=
       le_boxDropPartition_of_prefix_surplus hst hsource htarget hgap h.le
-        (prefix_surplus_of_rowLen_le_before_target hi0pred hrowBefore hstrict)
+        (prefix_surplus_of_rowLen_le_before_target D.i0_le_pred D.hrowBefore D.hstrict)
     have hnu_le_lam :
         boxDropPartition lam hst hsource htarget hgap ≤ lam :=
       boxDropPartition_le_original lam hst hsource htarget hgap
     have hnu_ne_lam : boxDropPartition lam hst hsource htarget hgap ≠ lam := by
       intro hEq
-      have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen (j - 1)) hEq
-      change (boxDropPartition lam hst hsource htarget hgap).rowLen (j - 1) =
-        lam.rowLen (j - 1) at hroweq
+      have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen (D.j - 1)) hEq
+      change (boxDropPartition lam hst hsource htarget hgap).rowLen (D.j - 1) =
+        lam.rowLen (D.j - 1) at hroweq
       rw [rowLen_boxDropPartition lam hst hsource htarget hgap] at hroweq
       simp at hroweq
-      have hpos : 0 < lam.rowLen (j - 1) := by omega
+      have hpos : 0 < lam.rowLen (D.j - 1) := by omega
       omega
-    rcases h.eq_or_eq hmu_le_nu hnu_le_lam with hnu_eq_mu | hnu_eq_lam
-    · refine ⟨j - 1, j, hst, hsource, htarget, hgap, ?_, hnu_eq_mu.symm⟩
-      left
-      exact (Nat.sub_add_cancel hjpos).symm
-    · exact False.elim (hnu_ne_lam hnu_eq_lam)
+    refine ⟨D.j - 1, D.j, hst, hsource, htarget, hgap, ?_,
+      (eq_of_between h hmu_le_nu hnu_le_lam hnu_ne_lam).symm⟩
+    left
+    exact (Nat.sub_add_cancel D.j_pos).symm
 
 /-- Covering in dominance order moves exactly one box from an earlier row to a later row. -/
 theorem isBoxDrop_of_covBy {n : ℕ} {mu lam : Nat.Partition n} (h : mu ⋖ lam) :

@@ -97,6 +97,14 @@ noncomputable instance instPartialOrder (n : ℕ) : PartialOrder (Nat.Partition 
     intro k
     exact le_antisymm (hab k) (hba k)
 
+lemma eq_of_between {n : ℕ} {mu lam nu : Nat.Partition n}
+    (h : mu ⋖ lam) (hmu_le_nu : mu ≤ nu) (hnu_le_lam : nu ≤ lam)
+    (hnu_ne_lam : nu ≠ lam) :
+    nu = mu := by
+  rcases h.eq_or_eq hmu_le_nu hnu_le_lam with hnu_eq_mu | hnu_eq_lam
+  · exact hnu_eq_mu
+  · exact False.elim (hnu_ne_lam hnu_eq_lam)
+
 lemma exists_prefixSum_lt_of_lt {n : ℕ} {mu lam : Nat.Partition n} (h : mu < lam) :
     ∃ k : ℕ, mu.prefixSum k < lam.prefixSum k := by
   rcases h with ⟨_hle, hnot⟩
@@ -288,6 +296,27 @@ lemma exists_plateau_source {n : ℕ} (lam : Nat.Partition n) {i0 j : ℕ}
     exact Nat.findGreatest_is_greatest (P := P) (by omega : s < s + 1)
       hsnext_le_jpred hPnext
 
+/-- The bottom row of the constant-height plateau starting at a first source row. -/
+structure PlateauSourceData {n : ℕ} (lam : Nat.Partition n) (i0 j : ℕ) where
+  s : ℕ
+  hi0s : i0 ≤ s
+  hsj : s < j
+  hsrow : lam.rowLen s = lam.rowLen i0
+  hsource : lam.rowLen (s + 1) < lam.rowLen s
+
+lemma nonempty_plateauSourceData {n : ℕ} (lam : Nat.Partition n) {i0 j : ℕ}
+    (hi0j : i0 < j) (hjdrop : lam.rowLen j < lam.rowLen i0) :
+    Nonempty (PlateauSourceData lam i0 j) := by
+  rcases exists_plateau_source lam hi0j hjdrop with
+    ⟨s, hi0s, hsj, hsrow, hsource⟩
+  exact ⟨{
+    s := s
+    hi0s := hi0s
+    hsj := hsj
+    hsrow := hsrow
+    hsource := hsource
+  }⟩
+
 
 lemma prefixSum_succ_le_of_rowLen_le_of_rowLen_lt {n : ℕ} {mu lam : Nat.Partition n}
     {i0 k : ℕ} (hi0k : i0 < k)
@@ -384,6 +413,71 @@ lemma rowLen_mu_le_lam_before_target {n : ℕ} {mu lam : Nat.Partition n}
     have hlam_lower : lam.rowLen i0 ≤ lam.rowLen r + 1 :=
       le_of_not_gt (hnoDrop r hi0r hrj)
     omega
+
+/-- The first source row and first possible target row in a strict dominance interval. -/
+structure FirstDropData {n : ℕ} (mu lam : Nat.Partition n) where
+  i0 : ℕ
+  j : ℕ
+  hbefore : ∀ r : ℕ, r < i0 → mu.rowLen r = lam.rowLen r
+  hstrict : mu.rowLen i0 < lam.rowLen i0
+  hi0j : i0 < j
+  hgap_i0 : lam.rowLen j + 1 < lam.rowLen i0
+  hnoDrop : ∀ r : ℕ, i0 ≤ r → r < j → ¬lam.rowLen r + 1 < lam.rowLen i0
+  hrowBefore : ∀ r : ℕ, r < j → mu.rowLen r ≤ lam.rowLen r
+
+lemma nonempty_firstDropData_of_lt {n : ℕ} {mu lam : Nat.Partition n}
+    (h : mu < lam) :
+    Nonempty (FirstDropData mu lam) := by
+  classical
+  rcases exists_first_rowLen_lt_of_lt h with ⟨i0, hbefore, hstrict⟩
+  let targetExists := exists_drop_target_of_first_row (mu := mu) (lam := lam)
+    hbefore hstrict
+  let j := Nat.find targetExists
+  have hj_spec : i0 < j ∧ lam.rowLen j + 1 < lam.rowLen i0 :=
+    Nat.find_spec targetExists
+  have hi0j : i0 < j := hj_spec.1
+  have hgap_i0 : lam.rowLen j + 1 < lam.rowLen i0 := hj_spec.2
+  have hnoDrop :
+      ∀ r : ℕ, i0 ≤ r → r < j → ¬lam.rowLen r + 1 < lam.rowLen i0 := by
+    intro r hi0r hrj hdrop
+    rcases eq_or_lt_of_le hi0r with rfl | hi0r_lt
+    · omega
+    · exact Nat.find_min targetExists hrj ⟨hi0r_lt, hdrop⟩
+  exact ⟨{
+    i0 := i0
+    j := j
+    hbefore := hbefore
+    hstrict := hstrict
+    hi0j := hi0j
+    hgap_i0 := hgap_i0
+    hnoDrop := hnoDrop
+    hrowBefore := rowLen_mu_le_lam_before_target hbefore hstrict hnoDrop
+  }⟩
+
+namespace FirstDropData
+
+variable {n : ℕ} {mu lam : Nat.Partition n} (D : FirstDropData mu lam)
+
+lemma j_pos : 0 < D.j :=
+  lt_of_le_of_lt (Nat.zero_le D.i0) D.hi0j
+
+lemma pred_lt_j : D.j - 1 < D.j :=
+  Nat.sub_one_lt_of_lt D.j_pos
+
+lemma i0_le_pred : D.i0 ≤ D.j - 1 :=
+  Nat.le_sub_one_of_lt D.hi0j
+
+lemma rowLen_i0_le_pred_add_one :
+    lam.rowLen D.i0 ≤ lam.rowLen (D.j - 1) + 1 :=
+  le_of_not_gt (D.hnoDrop (D.j - 1) D.i0_le_pred D.pred_lt_j)
+
+lemma rowLen_j_lt_pred :
+    lam.rowLen D.j < lam.rowLen (D.j - 1) := by
+  have hlower := D.rowLen_i0_le_pred_add_one
+  have hgap := D.hgap_i0
+  omega
+
+end FirstDropData
 
 lemma rowLen_eq_pred_of_source_lt_of_noDrop {n : ℕ} {lam : Nat.Partition n}
     {i0 s j r : ℕ} (hi0s : i0 ≤ s) (hsr : s < r) (hrj : r < j)

@@ -55,22 +55,17 @@ lemma CPartition.isCMove_of_exact_odd_branch {n : ℕ} {mu lam : CPartition n}
         lam.val.rowLen ((s - 1) + 1) := by
     rw [Nat.sub_add_cancel hspos]
     exact hsource
-  have htarget₁ : (lam : Nat.Partition (2 * n)).rowLen j < lam.val.rowLen (j - 1) :=
-    htarget
   have hgap₁ :
       (lam : Nat.Partition (2 * n)).rowLen j + 1 < lam.val.rowLen ((s - 1) + 1) := by
     rw [Nat.sub_add_cancel hspos]
     exact hgap
   have hsource₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen ((s - 1) + 1) <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s - 1) := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hs_ne : (s - 1) + 1 ≠ s - 1 := by omega
-    have hs_t : (s - 1) + 1 ≠ j := by omega
-    have hpred_s : s - 1 ≠ (s - 1) + 1 := by omega
-    have hpred_t : s - 1 ≠ j := by omega
-    rw [if_pos rfl, if_neg hpred_s, if_neg hpred_t]
+      (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen ((s - 1) + 1) <
+        (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (s - 1) := by
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [if_pos rfl, if_neg (by omega : s - 1 ≠ (s - 1) + 1),
+      if_neg (by omega : s - 1 ≠ j)]
     have hs_eq : (s - 1) + 1 = s := Nat.sub_add_cancel hspos
     rw [hs_eq]
     rw [hspair]
@@ -79,25 +74,23 @@ lemma CPartition.isCMove_of_exact_odd_branch {n : ℕ} {mu lam : CPartition n}
       exact hsodd.pos
     omega
   have htarget₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (j + 1) <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen j := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hj1s : j + 1 ≠ (s - 1) + 1 := by omega
-    have hj1j : j + 1 ≠ j := by omega
-    have hjs : j ≠ (s - 1) + 1 := by omega
-    rw [if_neg hj1s, if_neg hj1j, if_neg hjs, if_pos rfl]
+      (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (j + 1) <
+        (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen j := by
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [if_neg (by omega : j + 1 ≠ (s - 1) + 1),
+      if_neg (by omega : j + 1 ≠ j), if_neg (by omega : j ≠ (s - 1) + 1),
+      if_pos rfl]
     omega
   have hgap₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (j + 1) + 1 <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s - 1) := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hj1s : j + 1 ≠ (s - 1) + 1 := by omega
-    have hj1j : j + 1 ≠ j := by omega
-    have hpred_s : s - 1 ≠ (s - 1) + 1 := by omega
-    have hpred_j : s - 1 ≠ j := by omega
-    rw [if_neg hj1s, if_neg hj1j, if_neg hpred_s, if_neg hpred_j]
+      (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (j + 1) + 1 <
+        (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (s - 1) := by
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [if_neg (by omega : j + 1 ≠ (s - 1) + 1),
+      if_neg (by omega : j + 1 ≠ j),
+      if_neg (by omega : s - 1 ≠ (s - 1) + 1),
+      if_neg (by omega : s - 1 ≠ j)]
     rw [← htpair]
     rw [hspair, hexact]
     omega
@@ -110,7 +103,7 @@ lemma CPartition.isCMove_of_exact_odd_branch {n : ℕ} {mu lam : CPartition n}
       (lam : Nat.Partition (2 * n)).rowLen j + 2 ≤ lam.val.rowLen (s - 1) := by
     rw [hspair, hexact]
   exact CPartition.isCMove_of_doubleBoxDrop_sourcePair_targetPair h hst hsource₁
-    htarget₁ hgap₁ hsource₂ htarget₂ hgap₂ hmu_le_lam hmiddle_left hmiddle_two
+    htarget hgap₁ hsource₂ htarget₂ hgap₂ hmu_le_lam hmiddle_left hmiddle_two
     hmiddle_right hsodd hspair' hjodd htpair hgap2
 
 lemma CPartition.isCMove_of_exact_branch {n : ℕ} {mu lam : CPartition n}
@@ -233,35 +226,28 @@ lemma CPartition.isCMove_of_large_even_adjacent_branch {n : ℕ}
     IsCMove lam mu := by
   subst j
   have hst : s < s + 1 := Nat.lt_succ_self s
-  have hsource₁ :
-      (lam : Nat.Partition (2 * n)).rowLen (s + 1) < lam.val.rowLen s := hsource
-  have htarget₁ :
-      (lam : Nat.Partition (2 * n)).rowLen (s + 1) < lam.val.rowLen ((s + 1) - 1) :=
-    htarget
-  have hgap₁ :
-      (lam : Nat.Partition (2 * n)).rowLen (s + 1) + 1 < lam.val.rowLen s := hgap
   have hsource₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s + 1) <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen s := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
+      (boxDropPartition lam.val hst hsource htarget hgap).rowLen (s + 1) <
+        (boxDropPartition lam.val hst hsource htarget hgap).rowLen s := by
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
     simp
     omega
   have htarget₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s + 1) <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen ((s + 1) - 1) := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
+      (boxDropPartition lam.val hst hsource htarget hgap).rowLen (s + 1) <
+        (boxDropPartition lam.val hst hsource htarget hgap).rowLen ((s + 1) - 1) := by
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
     simp
     omega
   have hgap₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s + 1) + 1 <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen s := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
+      (boxDropPartition lam.val hst hsource htarget hgap).rowLen (s + 1) + 1 <
+        (boxDropPartition lam.val hst hsource htarget hgap).rowLen s := by
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
     simp
     omega
-  exact CPartition.isCMove_of_doubleBoxDrop_same h hst hsource₁ htarget₁ hgap₁
+  exact CPartition.isCMove_of_doubleBoxDrop_same h hst hsource htarget hgap
     hsource₂ htarget₂ hgap₂ h.le hmiddle hseven hjeven hgap4
 
 lemma CPartition.isCMove_of_even_odd_adjacent_branch {n : ℕ}
@@ -280,44 +266,34 @@ lemma CPartition.isCMove_of_even_odd_adjacent_branch {n : ℕ}
     IsCMove lam mu := by
   subst j
   have hst : s < s + 1 := Nat.lt_succ_self s
-  have hsource₁ :
-      (lam : Nat.Partition (2 * n)).rowLen (s + 1) < lam.val.rowLen s := hsource
-  have htarget₁ :
-      (lam : Nat.Partition (2 * n)).rowLen (s + 1) <
-        lam.val.rowLen ((s + 1) - 1) :=
-    htarget
-  have hgap₁ :
-      (lam : Nat.Partition (2 * n)).rowLen (s + 1) + 1 < lam.val.rowLen s := hgap
   have hsource₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s + 1) <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen s := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
+      (boxDropPartition lam.val hst hsource htarget hgap).rowLen (s + 1) <
+        (boxDropPartition lam.val hst hsource htarget hgap).rowLen s := by
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
     simp
     omega
   have htarget₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen ((s + 1) + 1) <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s + 1) := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hs2s : (s + 1) + 1 ≠ s := by omega
-    have hs2t : (s + 1) + 1 ≠ s + 1 := by omega
-    have ht_s : s + 1 ≠ s := by omega
-    rw [if_neg hs2s, if_neg hs2t, if_neg ht_s, if_pos rfl]
+      (boxDropPartition lam.val hst hsource htarget hgap).rowLen ((s + 1) + 1) <
+        (boxDropPartition lam.val hst hsource htarget hgap).rowLen (s + 1) := by
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
+    rw [if_neg (by omega : (s + 1) + 1 ≠ s),
+      if_neg (by omega : (s + 1) + 1 ≠ s + 1),
+      if_neg (by omega : s + 1 ≠ s), if_pos rfl]
     rw [← htpair]
     omega
   have hgap₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen ((s + 1) + 1) + 1 <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen s := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hs2s : (s + 1) + 1 ≠ s := by omega
-    have hs2t : (s + 1) + 1 ≠ s + 1 := by omega
-    rw [if_neg hs2s, if_neg hs2t, if_pos rfl]
+      (boxDropPartition lam.val hst hsource htarget hgap).rowLen ((s + 1) + 1) + 1 <
+        (boxDropPartition lam.val hst hsource htarget hgap).rowLen s := by
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
+    rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
+    rw [if_neg (by omega : (s + 1) + 1 ≠ s),
+      if_neg (by omega : (s + 1) + 1 ≠ s + 1), if_pos rfl]
     rw [← htpair]
     omega
-  exact CPartition.isCMove_of_doubleBoxDrop_source_pairTarget h hst hsource₁
-    htarget₁ hgap₁ hsource₂ htarget₂ hgap₂ h.le hmiddle₂ hmiddle₁ hseven
+  exact CPartition.isCMove_of_doubleBoxDrop_source_pairTarget h hst hsource htarget hgap
+    hsource₂ htarget₂ hgap₂ h.le hmiddle₂ hmiddle₁ hseven
     hjodd htpair hgap3
 
 lemma CPartition.isCMove_of_large_even_nonadjacent_branch {n : ℕ}
@@ -356,11 +332,8 @@ lemma CPartition.isCMove_of_large_even_nonadjacent_branch {n : ℕ}
         (boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁).rowLen (j - 2) := by
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
-    have hleft : (j - 2) + 1 ≠ j - 2 := by omega
-    have hleft_t : (j - 2) + 1 ≠ j := by omega
-    have hright : j - 2 ≠ (j - 2) + 1 := by omega
-    have hright_t : j - 2 ≠ j := by omega
-    rw [if_pos rfl, if_neg hright, if_neg hright_t]
+    rw [if_pos rfl, if_neg (by omega : j - 2 ≠ (j - 2) + 1),
+      if_neg (by omega : j - 2 ≠ j)]
     rw [hj2_succ, hrow_mid, hrow_mid_prev]
     omega
   have htarget₂ :
@@ -368,10 +341,8 @@ lemma CPartition.isCMove_of_large_even_nonadjacent_branch {n : ℕ}
         (boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁).rowLen (j - 1) := by
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
-    have hjsrc : j ≠ (j - 2) + 1 := by omega
-    have hpred_src : j - 1 = (j - 2) + 1 := by omega
-    have hpred_t : j - 1 ≠ j := by omega
-    rw [if_neg hjsrc, if_pos rfl, if_pos hpred_src]
+    rw [if_neg (by omega : j ≠ (j - 2) + 1), if_pos rfl,
+      if_pos (by omega : j - 1 = (j - 2) + 1)]
     rw [hrow_mid]
     omega
   have hgap₂ :
@@ -379,10 +350,9 @@ lemma CPartition.isCMove_of_large_even_nonadjacent_branch {n : ℕ}
         (boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁).rowLen (j - 2) := by
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
-    have hjsrc : j ≠ (j - 2) + 1 := by omega
-    have hright : j - 2 ≠ (j - 2) + 1 := by omega
-    have hright_t : j - 2 ≠ j := by omega
-    rw [if_neg hjsrc, if_pos rfl, if_neg hright, if_neg hright_t]
+    rw [if_neg (by omega : j ≠ (j - 2) + 1), if_pos rfl,
+      if_neg (by omega : j - 2 ≠ (j - 2) + 1),
+      if_neg (by omega : j - 2 ≠ j)]
     rw [hrow_mid_prev]
     omega
   have hmidOdd : Odd ((lam : Nat.Partition (2 * n)).rowLen (j - 2)) := by
@@ -463,9 +433,8 @@ lemma CPartition.isCMove_of_even_odd_nonadjacent_branch {n : ℕ}
         (boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁).rowLen (j - 2) := by
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
-    have hright : j - 2 ≠ (j - 2) + 1 := by omega
-    have hright_t : j - 2 ≠ j := by omega
-    rw [if_pos rfl, if_neg hright, if_neg hright_t]
+    rw [if_pos rfl, if_neg (by omega : j - 2 ≠ (j - 2) + 1),
+      if_neg (by omega : j - 2 ≠ j)]
     rw [hj2_succ, hrow_mid, hrow_mid_prev]
     omega
   have htarget₂ :
@@ -473,10 +442,9 @@ lemma CPartition.isCMove_of_even_odd_nonadjacent_branch {n : ℕ}
         (boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁).rowLen j := by
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
-    have hj1s : j + 1 ≠ (j - 2) + 1 := by omega
-    have hj1t : j + 1 ≠ j := by omega
-    have hjs : j ≠ (j - 2) + 1 := by omega
-    rw [if_neg hj1s, if_neg hj1t, if_neg hjs, if_pos rfl]
+    rw [if_neg (by omega : j + 1 ≠ (j - 2) + 1),
+      if_neg (by omega : j + 1 ≠ j), if_neg (by omega : j ≠ (j - 2) + 1),
+      if_pos rfl]
     rw [← htpair]
     omega
   have hgap₂ :
@@ -484,11 +452,10 @@ lemma CPartition.isCMove_of_even_odd_nonadjacent_branch {n : ℕ}
         (boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁).rowLen (j - 2) := by
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
     rw [rowLen_boxDropPartition lam.val hj2_lt_j hsource₁ htarget₁ hgap₁]
-    have hj1s : j + 1 ≠ (j - 2) + 1 := by omega
-    have hj1t : j + 1 ≠ j := by omega
-    have hright : j - 2 ≠ (j - 2) + 1 := by omega
-    have hright_t : j - 2 ≠ j := by omega
-    rw [if_neg hj1s, if_neg hj1t, if_neg hright, if_neg hright_t]
+    rw [if_neg (by omega : j + 1 ≠ (j - 2) + 1),
+      if_neg (by omega : j + 1 ≠ j),
+      if_neg (by omega : j - 2 ≠ (j - 2) + 1),
+      if_neg (by omega : j - 2 ≠ j)]
     rw [← htpair, hrow_mid_prev]
     omega
   have hmidOdd : Odd ((lam : Nat.Partition (2 * n)).rowLen (j - 2)) := by
@@ -649,58 +616,46 @@ lemma CPartition.isCMove_of_odd_even_adjacent_branch {n : ℕ}
         lam.val.rowLen ((s - 1) + 1) := by
     rw [Nat.sub_add_cancel hspos]
     exact hsource
-  have htarget₁ :
-      (lam : Nat.Partition (2 * n)).rowLen (s + 1) <
-        lam.val.rowLen ((s + 1) - 1) :=
-    htarget
   have hgap₁ :
       (lam : Nat.Partition (2 * n)).rowLen (s + 1) + 1 <
         lam.val.rowLen ((s - 1) + 1) := by
     rw [Nat.sub_add_cancel hspos]
     exact hgap
   have hsource₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen ((s - 1) + 1) <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s - 1) := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hs_ne : (s - 1) + 1 ≠ s - 1 := by omega
-    have hs_t : (s - 1) + 1 ≠ s + 1 := by omega
-    have hpred_s : s - 1 ≠ (s - 1) + 1 := by omega
-    have hpred_t : s - 1 ≠ s + 1 := by omega
-    rw [if_pos rfl, if_neg hpred_s, if_neg hpred_t]
+      (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen ((s - 1) + 1) <
+        (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (s - 1) := by
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [if_pos rfl, if_neg (by omega : s - 1 ≠ (s - 1) + 1),
+      if_neg (by omega : s - 1 ≠ s + 1)]
     rw [Nat.sub_add_cancel hspos, hspair]
     have hpos : 0 < (lam : Nat.Partition (2 * n)).rowLen s := by
       rw [← hspair]
       exact hsodd.pos
     omega
   have htarget₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s + 1) <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen ((s + 1) - 1) := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have ht_s : s + 1 ≠ (s - 1) + 1 := by omega
-    have hpred_eq : (s + 1) - 1 = (s - 1) + 1 := by omega
-    have hpred_t : (s + 1) - 1 ≠ s + 1 := by omega
-    rw [if_neg ht_s, if_pos rfl, if_pos hpred_eq]
-    have hpred_s : (s + 1) - 1 = s := by omega
-    rw [hpred_s, ← hspair]
+      (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (s + 1) <
+        (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen ((s + 1) - 1) := by
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [if_neg (by omega : s + 1 ≠ (s - 1) + 1), if_pos rfl,
+      if_pos (by omega : (s + 1) - 1 = (s - 1) + 1)]
+    rw [(by omega : (s + 1) - 1 = s), ← hspair]
     omega
   have hgap₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s + 1) + 1 <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s - 1) := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have ht_s : s + 1 ≠ (s - 1) + 1 := by omega
-    have hpred_s : s - 1 ≠ (s - 1) + 1 := by omega
-    have hpred_t : s - 1 ≠ s + 1 := by omega
-    rw [if_neg ht_s, if_pos rfl, if_neg hpred_s, if_neg hpred_t]
+      (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (s + 1) + 1 <
+        (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (s - 1) := by
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [if_neg (by omega : s + 1 ≠ (s - 1) + 1), if_pos rfl,
+      if_neg (by omega : s - 1 ≠ (s - 1) + 1), if_neg (by omega : s - 1 ≠ s + 1)]
     omega
   have hspair' :
       (lam : Nat.Partition (2 * n)).rowLen (s - 1) =
         lam.val.rowLen ((s - 1) + 1) := by
     rw [Nat.sub_add_cancel hspos]
     exact hspair
-  exact CPartition.isCMove_of_doubleBoxDrop_sourcePair_target h hst hsource₁ htarget₁
+  exact CPartition.isCMove_of_doubleBoxDrop_sourcePair_target h hst hsource₁ htarget
     hgap₁ hsource₂ htarget₂ hgap₂ h.le hmiddle_left hmiddle_two hsodd hspair'
     hjeven hgap3
 
@@ -829,11 +784,9 @@ lemma CPartition.isCMove_of_odd_even_nonadjacent_large_branch {n : ℕ}
         (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (j - 1) := by
     rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
     rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hj_s : j ≠ j - 1 := by omega
-    have hpred_s : j - 1 = j - 1 := rfl
-    have hpred_t : j - 1 ≠ j := by omega
     rw [Nat.sub_add_cancel (by omega : 0 < j)]
-    rw [if_neg hj_s, if_pos rfl, if_pos hpred_s]
+    rw [if_neg (by omega : j ≠ j - 1), if_pos rfl,
+      if_pos (rfl : j - 1 = j - 1)]
     rw [hrow_mid]
     omega
   have htarget₂ :
@@ -841,9 +794,8 @@ lemma CPartition.isCMove_of_odd_even_nonadjacent_large_branch {n : ℕ}
         (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (j - 1) := by
     rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
     rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hj_s : j ≠ j - 1 := by omega
-    have hpred_s : j - 1 = j - 1 := rfl
-    rw [if_neg hj_s, if_pos rfl, if_pos hpred_s]
+    rw [if_neg (by omega : j ≠ j - 1), if_pos rfl,
+      if_pos (rfl : j - 1 = j - 1)]
     rw [hrow_mid]
     omega
   have hgap₂ :
@@ -851,9 +803,8 @@ lemma CPartition.isCMove_of_odd_even_nonadjacent_large_branch {n : ℕ}
         (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (j - 1) := by
     rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
     rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hj_s : j ≠ j - 1 := by omega
-    have hpred_s : j - 1 = j - 1 := rfl
-    rw [if_neg hj_s, if_pos rfl, if_pos hpred_s]
+    rw [if_neg (by omega : j ≠ j - 1), if_pos rfl,
+      if_pos (rfl : j - 1 = j - 1)]
     rw [hrow_mid]
     omega
   have hsourceEven : Even ((lam : Nat.Partition (2 * n)).rowLen (j - 1)) := by
@@ -973,45 +924,40 @@ lemma CPartition.isCMove_of_odd_odd_branch {n : ℕ} {mu lam : CPartition n}
         lam.val.rowLen ((s - 1) + 1) := by
     rw [Nat.sub_add_cancel hspos]
     exact hsource
-  have htarget₁ : (lam : Nat.Partition (2 * n)).rowLen j < lam.val.rowLen (j - 1) :=
-    htarget
   have hgap₁ :
       (lam : Nat.Partition (2 * n)).rowLen j + 1 < lam.val.rowLen ((s - 1) + 1) := by
     rw [Nat.sub_add_cancel hspos]
     exact hgap
   have hsource₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen ((s - 1) + 1) <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s - 1) := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hpred_s : s - 1 ≠ (s - 1) + 1 := by omega
-    have hpred_t : s - 1 ≠ j := by omega
-    rw [if_pos rfl, if_neg hpred_s, if_neg hpred_t]
+      (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen ((s - 1) + 1) <
+        (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (s - 1) := by
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [if_pos rfl, if_neg (by omega : s - 1 ≠ (s - 1) + 1),
+      if_neg (by omega : s - 1 ≠ j)]
     rw [Nat.sub_add_cancel hspos, hspair]
     have hpos : 0 < (lam : Nat.Partition (2 * n)).rowLen s := by
       rw [← hspair]
       exact hsodd.pos
     omega
   have htarget₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (j + 1) <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen j := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hj1s : j + 1 ≠ (s - 1) + 1 := by omega
-    have hj1j : j + 1 ≠ j := by omega
-    have hjs : j ≠ (s - 1) + 1 := by omega
-    rw [if_neg hj1s, if_neg hj1j, if_neg hjs, if_pos rfl]
+      (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (j + 1) <
+        (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen j := by
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [if_neg (by omega : j + 1 ≠ (s - 1) + 1),
+      if_neg (by omega : j + 1 ≠ j), if_neg (by omega : j ≠ (s - 1) + 1),
+      if_pos rfl]
     omega
   have hgap₂ :
-      (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (j + 1) + 1 <
-        (boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁).rowLen (s - 1) := by
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget₁ hgap₁]
-    have hj1s : j + 1 ≠ (s - 1) + 1 := by omega
-    have hj1j : j + 1 ≠ j := by omega
-    have hpred_s : s - 1 ≠ (s - 1) + 1 := by omega
-    have hpred_j : s - 1 ≠ j := by omega
-    rw [if_neg hj1s, if_neg hj1j, if_neg hpred_s, if_neg hpred_j]
+      (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (j + 1) + 1 <
+        (boxDropPartition lam.val hst hsource₁ htarget hgap₁).rowLen (s - 1) := by
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [rowLen_boxDropPartition lam.val hst hsource₁ htarget hgap₁]
+    rw [if_neg (by omega : j + 1 ≠ (s - 1) + 1),
+      if_neg (by omega : j + 1 ≠ j),
+      if_neg (by omega : s - 1 ≠ (s - 1) + 1),
+      if_neg (by omega : s - 1 ≠ j)]
     rw [← htpair]
     omega
   have hspair' :
@@ -1020,7 +966,7 @@ lemma CPartition.isCMove_of_odd_odd_branch {n : ℕ} {mu lam : CPartition n}
     rw [Nat.sub_add_cancel hspos]
     exact hspair
   exact CPartition.isCMove_of_doubleBoxDrop_sourcePair_targetPair h hst hsource₁
-    htarget₁ hgap₁ hsource₂ htarget₂ hgap₂ h.le hmiddle_left hmiddle_two
+    htarget hgap₁ hsource₂ htarget₂ hgap₂ h.le hmiddle_left hmiddle_two
     hmiddle_right hsodd hspair' hjodd htpair hgap2
 
 lemma CPartition.isCMove_of_odd_odd_branch_of_source_surplus {n : ℕ}
@@ -1115,56 +1061,25 @@ lemma CPartition.isCMove_of_odd_source_branch_of_source_surplus {n : ℕ}
 theorem CPartition.isCMove_of_covBy {n : ℕ} {mu lam : CPartition n} (h : mu ⋖ lam) :
     IsCMove lam mu := by
   classical
-  rcases exists_first_rowLen_lt_of_lt (cPartition_lt_iff.mp h.lt) with
-    ⟨i0, hbefore, hstrict⟩
-  let targetExists := exists_drop_target_of_first_row
-    (mu := (mu : Nat.Partition (2 * n))) (lam := (lam : Nat.Partition (2 * n)))
-    hbefore hstrict
-  let j := Nat.find targetExists
-  have hj_spec : i0 < j ∧
-      (lam : Nat.Partition (2 * n)).rowLen j + 1 < lam.val.rowLen i0 :=
-    Nat.find_spec targetExists
-  have hi0j : i0 < j := hj_spec.1
-  have hjgap_i0 : (lam : Nat.Partition (2 * n)).rowLen j + 1 < lam.val.rowLen i0 :=
-    hj_spec.2
-  have hnoDrop :
-      ∀ r : ℕ, i0 ≤ r → r < j →
-        ¬(lam : Nat.Partition (2 * n)).rowLen r + 1 < lam.val.rowLen i0 := by
-    intro r hi0r hrj hdrop
-    rcases eq_or_lt_of_le hi0r with rfl | hi0r_lt
-    · omega
-    · exact Nat.find_min targetExists hrj ⟨hi0r_lt, hdrop⟩
-  have hrowBefore : ∀ r : ℕ, r < j →
-      (mu : Nat.Partition (2 * n)).rowLen r ≤ lam.val.rowLen r :=
-    rowLen_mu_le_lam_before_target hbefore hstrict hnoDrop
-  have hjdrop : (lam : Nat.Partition (2 * n)).rowLen j < lam.val.rowLen i0 := by
-    omega
-  rcases exists_plateau_source (lam : Nat.Partition (2 * n)) hi0j hjdrop with
-    ⟨s, hi0s, hsj, hsrow, hsource⟩
-  have htarget : (lam : Nat.Partition (2 * n)).rowLen j < lam.val.rowLen (j - 1) := by
-    have hjpos : 0 < j := lt_of_le_of_lt (Nat.zero_le i0) hi0j
-    have hi0pred : i0 ≤ j - 1 := Nat.le_sub_one_of_lt hi0j
-    have hpred_lt : j - 1 < j := Nat.sub_one_lt_of_lt hjpos
-    have hnopred := hnoDrop (j - 1) hi0pred hpred_lt
-    have hlower : (lam : Nat.Partition (2 * n)).rowLen i0 ≤
-        lam.val.rowLen (j - 1) + 1 := le_of_not_gt hnopred
-    omega
-  have hgap : (lam : Nat.Partition (2 * n)).rowLen j + 1 < lam.val.rowLen s := by
-    rw [hsrow]
-    exact hjgap_i0
-  by_cases hexact : (lam : Nat.Partition (2 * n)).rowLen s =
-      (lam : Nat.Partition (2 * n)).rowLen j + 2
-  · exact CPartition.isCMove_of_exact_branch_of_source_surplus h hbefore hi0s hsj
-      hsrow hsource htarget hgap hrowBefore hstrict hexact
-  · have hlarge : (lam : Nat.Partition (2 * n)).rowLen j + 2 < lam.val.rowLen s := by
-      have hle : (lam : Nat.Partition (2 * n)).rowLen j + 2 ≤ lam.val.rowLen s := by
-        omega
-      exact lt_of_le_of_ne hle (Ne.symm hexact)
-    rcases Nat.even_or_odd ((lam : Nat.Partition (2 * n)).rowLen s) with hseven | hsodd
-    · exact CPartition.isCMove_of_even_source_large_branch h hbefore hi0s hsj
-        hsrow hsource htarget hgap hlarge hnoDrop hrowBefore hstrict hseven
-    · exact CPartition.isCMove_of_odd_source_branch_of_source_surplus h hbefore
-        hi0s hsj hsrow hsource htarget hgap hnoDrop hrowBefore hstrict hsodd
+  rcases nonempty_firstDropData_of_lt (cPartition_lt_iff.mp h.lt) with ⟨D⟩
+  rcases nonempty_plateauSourceData (lam : Nat.Partition (2 * n)) D.hi0j
+    (lt_trans (Nat.lt_succ_self _) D.hgap_i0) with ⟨S⟩
+  have htarget : (lam : Nat.Partition (2 * n)).rowLen D.j < lam.val.rowLen (D.j - 1) :=
+    D.rowLen_j_lt_pred
+  have hgap : (lam : Nat.Partition (2 * n)).rowLen D.j + 1 < lam.val.rowLen S.s := by
+    rw [S.hsrow]
+    exact D.hgap_i0
+  by_cases hexact : (lam : Nat.Partition (2 * n)).rowLen S.s =
+      (lam : Nat.Partition (2 * n)).rowLen D.j + 2
+  · exact CPartition.isCMove_of_exact_branch_of_source_surplus h D.hbefore S.hi0s S.hsj
+      S.hsrow S.hsource htarget hgap D.hrowBefore D.hstrict hexact
+  · have hlarge : (lam : Nat.Partition (2 * n)).rowLen D.j + 2 < lam.val.rowLen S.s := by
+      exact lt_of_le_of_ne (Nat.succ_le_of_lt hgap) (Ne.symm hexact)
+    rcases Nat.even_or_odd ((lam : Nat.Partition (2 * n)).rowLen S.s) with hseven | hsodd
+    · exact CPartition.isCMove_of_even_source_large_branch h D.hbefore S.hi0s S.hsj
+        S.hsrow S.hsource htarget hgap hlarge D.hnoDrop D.hrowBefore D.hstrict hseven
+    · exact CPartition.isCMove_of_odd_source_branch_of_source_surplus h D.hbefore
+        S.hi0s S.hsj S.hsrow S.hsource htarget hgap D.hnoDrop D.hrowBefore D.hstrict hsodd
 
 
 end Nat.Partition
