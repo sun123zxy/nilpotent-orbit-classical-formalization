@@ -231,21 +231,21 @@ lemma CPartition.isCMove_of_large_even_adjacent_branch {n : ℕ}
         (boxDropPartition lam.val hst hsource htarget hgap).rowLen s := by
     rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
     rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
-    simp
+    simp only [if_neg (by omega : s + 1 ≠ s), ↓reduceIte]
     omega
   have htarget₂ :
       (boxDropPartition lam.val hst hsource htarget hgap).rowLen (s + 1) <
         (boxDropPartition lam.val hst hsource htarget hgap).rowLen ((s + 1) - 1) := by
     rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
     rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
-    simp
+    simp only [Nat.add_sub_cancel, if_neg (by omega : s + 1 ≠ s), ↓reduceIte]
     omega
   have hgap₂ :
       (boxDropPartition lam.val hst hsource htarget hgap).rowLen (s + 1) + 1 <
         (boxDropPartition lam.val hst hsource htarget hgap).rowLen s := by
     rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
     rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
-    simp
+    simp only [if_neg (by omega : s + 1 ≠ s), ↓reduceIte]
     omega
   exact CPartition.isCMove_of_doubleBoxDrop_same h hst hsource htarget hgap
     hsource₂ htarget₂ hgap₂ h.le hmiddle hseven hjeven hgap4
@@ -271,7 +271,7 @@ lemma CPartition.isCMove_of_even_odd_adjacent_branch {n : ℕ}
         (boxDropPartition lam.val hst hsource htarget hgap).rowLen s := by
     rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
     rw [rowLen_boxDropPartition lam.val hst hsource htarget hgap]
-    simp
+    simp only [if_neg (by omega : s + 1 ≠ s), ↓reduceIte]
     omega
   have htarget₂ :
       (boxDropPartition lam.val hst hsource htarget hgap).rowLen ((s + 1) + 1) <

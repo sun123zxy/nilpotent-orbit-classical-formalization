@@ -48,7 +48,7 @@ lemma isBoxDrop_of_eq_boxDropPartition {n : ℕ} {mu lam : Nat.Partition n} {s t
   subst mu
   refine ⟨s, t, hst, ?_, ?_, ?_⟩
   · rw [rowLen_boxDropPartition lam hst hsource htarget hgap]
-    simp
+    rw [if_pos rfl]
     have hpos : 0 < lam.rowLen s := by omega
     omega
   · rw [rowLen_boxDropPartition lam hst hsource htarget hgap]
@@ -111,7 +111,7 @@ lemma exists_isCoverBoxDrop_between_of_lt {n : ℕ} {mu lam : Nat.Partition n}
       change (boxDropPartition lam S.hsj S.hsource htarget hgap).rowLen S.s =
         lam.rowLen S.s at hroweq
       rw [rowLen_boxDropPartition lam S.hsj S.hsource htarget hgap] at hroweq
-      simp at hroweq
+      rw [if_pos rfl] at hroweq
       have hpos : 0 < lam.rowLen S.s := by omega
       omega
     refine ⟨nu, ?_, hmu_le_nu, hnu_le_lam, hnu_ne_lam⟩
@@ -144,7 +144,7 @@ lemma exists_isCoverBoxDrop_between_of_lt {n : ℕ} {mu lam : Nat.Partition n}
       change (boxDropPartition lam hst hsource htarget hgap).rowLen (D.j - 1) =
         lam.rowLen (D.j - 1) at hroweq
       rw [rowLen_boxDropPartition lam hst hsource htarget hgap] at hroweq
-      simp at hroweq
+      rw [if_pos rfl] at hroweq
       have hpos : 0 < lam.rowLen (D.j - 1) := by omega
       omega
     refine ⟨nu, ?_, hmu_le_nu, hnu_le_lam, hnu_ne_lam⟩
@@ -177,7 +177,7 @@ theorem isCoverBoxDrop_of_covBy {n : ℕ} {mu lam : Nat.Partition n} (h : mu ⋖
       change (boxDropPartition lam S.hsj S.hsource htarget hgap).rowLen S.s =
         lam.rowLen S.s at hroweq
       rw [rowLen_boxDropPartition lam S.hsj S.hsource htarget hgap] at hroweq
-      simp at hroweq
+      rw [if_pos rfl] at hroweq
       have hpos : 0 < lam.rowLen S.s := by omega
       omega
     refine ⟨S.s, D.j, S.hsj, S.hsource, htarget, hgap, ?_,
@@ -211,7 +211,7 @@ theorem isCoverBoxDrop_of_covBy {n : ℕ} {mu lam : Nat.Partition n} (h : mu ⋖
       change (boxDropPartition lam hst hsource htarget hgap).rowLen (D.j - 1) =
         lam.rowLen (D.j - 1) at hroweq
       rw [rowLen_boxDropPartition lam hst hsource htarget hgap] at hroweq
-      simp at hroweq
+      rw [if_pos rfl] at hroweq
       have hpos : 0 < lam.rowLen (D.j - 1) := by omega
       omega
     refine ⟨D.j - 1, D.j, hst, hsource, htarget, hgap, ?_,

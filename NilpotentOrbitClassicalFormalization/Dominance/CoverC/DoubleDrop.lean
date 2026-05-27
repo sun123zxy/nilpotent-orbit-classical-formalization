@@ -38,7 +38,7 @@ lemma isCMove₂_of_eq_doubleBoxDrop_same {N : ℕ} {lam nu : Nat.Partition N}
     rw [show rho.rowLen s = lam.rowLen s - 1 by
       dsimp [rho]
       rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
-      simp]
+      rw [if_pos rfl]]
     omega
   · change (boxDropPartition rho hst hsource₂ htarget₂ hgap₂).rowLen t =
       lam.rowLen t + 2
@@ -173,7 +173,7 @@ lemma isCMove₃_of_eq_doubleBoxDrop_source_pairTarget {N : ℕ}
     rw [show rho.rowLen s = lam.rowLen s - 1 by
       dsimp [rho]
       rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
-      simp]
+      rw [if_pos rfl]]
     omega
   · change (boxDropPartition rho hst1 hsource₂ htarget₂ hgap₂).rowLen t =
       lam.rowLen t + 1
@@ -329,7 +329,7 @@ lemma isCMove₄_of_eq_doubleBoxDrop_sourcePair_target {N : ℕ}
       rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
       have hss1 : s ≠ s + 1 := by omega
       have hst_ne : s ≠ t := by omega
-      simp [hst_ne]]
+      rw [if_neg hss1, if_neg hst_ne]]
     have hpos : 0 < lam.rowLen s := hsodd.pos
     omega
   · change lam.rowLen (s + 1) =
@@ -341,7 +341,7 @@ lemma isCMove₄_of_eq_doubleBoxDrop_sourcePair_target {N : ℕ}
     change lam.rowLen (s + 1) = rho.rowLen (s + 1) + 1
     dsimp [rho]
     rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
-    simp
+    rw [if_pos rfl]
     have hpos : 0 < lam.rowLen (s + 1) := by
       rw [← hspair]
       exact hsodd.pos
@@ -494,7 +494,7 @@ lemma isCMove₅_of_eq_doubleBoxDrop_sourcePair_targetPair {N : ℕ}
       rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
       have hss1 : s ≠ s + 1 := by omega
       have hst_ne : s ≠ t := by omega
-      simp [hst_ne]]
+      rw [if_neg hss1, if_neg hst_ne]]
     have hpos : 0 < lam.rowLen s := hsodd.pos
     omega
   · change lam.rowLen (s + 1) =
@@ -506,7 +506,7 @@ lemma isCMove₅_of_eq_doubleBoxDrop_sourcePair_targetPair {N : ℕ}
     change lam.rowLen (s + 1) = rho.rowLen (s + 1) + 1
     dsimp [rho]
     rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
-    simp
+    rw [if_pos rfl]
     have hpos : 0 < lam.rowLen (s + 1) := by
       rw [← hspair]
       exact hsodd.pos
@@ -660,7 +660,7 @@ lemma isCMove₁_of_eq_boxDropPartition_even_exact {N : ℕ}
   subst nu
   refine ⟨s, t, hst, hseven, hteven, hexact, ?_, ?_, ?_⟩
   · rw [rowLen_boxDropPartition lam hst hsource htarget hgap]
-    simp
+    rw [if_pos rfl]
     have hpos : 0 < lam.rowLen s := by omega
     omega
   · rw [rowLen_boxDropPartition lam hst hsource htarget hgap]

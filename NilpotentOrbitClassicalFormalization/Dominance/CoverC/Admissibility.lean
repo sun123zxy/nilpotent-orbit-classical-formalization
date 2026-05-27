@@ -47,7 +47,8 @@ lemma isCPartition_of_isCMove₁ {N : ℕ} {lam mu : Nat.Partition N}
         exact hmpos
       exact lt_of_lt_of_le htcol hKmu
     have hs_not_base : s ∉ base := by
-      simp [base, hm]
+      intro hmem
+      have hrow := (Finset.mem_filter.mp hmem).2
       omega
     have ht_not_base : t ∉ base := by
       simp [base, hm]
@@ -222,10 +223,12 @@ lemma isCPartition_of_isCMove₃ {N : ℕ} {lam mu : Nat.Partition N}
         exact hmpos
       exact lt_of_lt_of_le ht1col hKlam
     have ht_not_base : t ∉ base := by
-      simp [base, hm]
+      intro hmem
+      have hrow := (Finset.mem_filter.mp hmem).2
       omega
     have ht1_not_base : t + 1 ∉ base := by
-      simp [base, hm, ht_pair]
+      intro hmem
+      have hrow := (Finset.mem_filter.mp hmem).2
       omega
     have htt1 : t ≠ t + 1 := by omega
     have hfilter_lam :
@@ -368,10 +371,12 @@ lemma isCPartition_of_isCMove₄ {N : ℕ} {lam mu : Nat.Partition N}
         exact hmpos
       exact lt_of_lt_of_le hs1col hKlam
     have hs_not_base : s ∉ base := by
-      simp [base, hm]
+      intro hmem
+      have hrow := (Finset.mem_filter.mp hmem).2
       omega
     have hs1_not_base : s + 1 ∉ base := by
-      simp [base, hm, hs_pair]
+      intro hmem
+      have hrow := (Finset.mem_filter.mp hmem).2
       omega
     have hss1 : s ≠ s + 1 := by omega
     have hfilter_lam :
@@ -514,10 +519,12 @@ lemma isCPartition_of_isCMove₅ {N : ℕ} {lam mu : Nat.Partition N}
         exact hmpos
       exact lt_of_lt_of_le hs1col hKlam
     have hs_not_base : s ∉ base := by
-      simp [base, hms]
+      intro hmem
+      have hrow := (Finset.mem_filter.mp hmem).2
       omega
     have hs1_not_base : s + 1 ∉ base := by
-      simp [base, hms, hs_pair]
+      intro hmem
+      have hrow := (Finset.mem_filter.mp hmem).2
       omega
     have hss1 : s ≠ s + 1 := by omega
     have hfilter_lam :
@@ -597,10 +604,12 @@ lemma isCPartition_of_isCMove₅ {N : ℕ} {lam mu : Nat.Partition N}
           exact hmpos
         exact lt_of_lt_of_le ht1col hKlam
       have ht_not_base : t ∉ base := by
-        simp [base, hmt]
+        intro hmem
+        have hrow := (Finset.mem_filter.mp hmem).2
         omega
       have ht1_not_base : t + 1 ∉ base := by
-        simp [base, hmt, ht_pair]
+        intro hmem
+        have hrow := (Finset.mem_filter.mp hmem).2
         omega
       have htt1 : t ≠ t + 1 := by omega
       have hfilter_lam :

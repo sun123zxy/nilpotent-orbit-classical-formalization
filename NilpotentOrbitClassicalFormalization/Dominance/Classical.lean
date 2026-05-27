@@ -81,7 +81,7 @@ lemma rowLens_count_eq_card_filter {N : ℕ} (p : Nat.Partition N) (m : ℕ) :
       rw [List.range_succ, List.map_append, List.count_append, ih]
       have hrange : Finset.range (c + 1) = insert c (Finset.range c) := by
         ext x
-        simp
+        rw [Finset.mem_range, Finset.mem_insert, Finset.mem_range]
         omega
       rw [hrange]
       by_cases h : p.rowLen c = m
@@ -302,12 +302,13 @@ lemma even_prefixSum_of_next_lt {N : ℕ} {p : Nat.Partition N}
       have hsplit :
           Finset.range (k + 1) = Finset.range a ∪ Finset.Ico a (k + 1) := by
         ext x
-        simp
+        rw [Finset.mem_range, Finset.mem_union, Finset.mem_range, Finset.mem_Ico]
         omega
       have hdisjoint : Disjoint (Finset.range a) (Finset.Ico a (k + 1)) := by
         rw [Finset.disjoint_left]
         intro x hxrange hxIco
-        simp at hxrange hxIco
+        rw [Finset.mem_range] at hxrange
+        rw [Finset.mem_Ico] at hxIco
         omega
       have hrowIco : ∀ r ∈ Finset.Ico a (k + 1), p.rowLen r = p.rowLen k := by
         intro r hr

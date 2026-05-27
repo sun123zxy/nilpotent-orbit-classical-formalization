@@ -250,7 +250,7 @@ lemma boxDropPartition_le_original {n : ℕ} (lam : Nat.Partition n) {s t : ℕ}
           have hxs : x ≠ s := (Finset.mem_erase.mp hxerase).1
           simp [hxs, hxt]
         rw [hrest]
-        simp [ne_of_gt hst]
+        simp only [if_neg (ne_of_gt hst), ↓reduceIte]
         omega
       · by_cases hsmem : s ∈ range k
         · rw [← Finset.add_sum_erase (range k)
@@ -327,7 +327,8 @@ lemma prefixSum_boxDropPartition {n : ℕ} (lam : Nat.Partition n) {s t : ℕ} (
             have hxs : x ≠ s := (Finset.mem_erase.mp hxerase).1
             simp [hxs, hxt]
           rw [hrest]
-          simp [ne_of_gt hst, hsk, Nat.not_le_of_gt htk]
+          simp only [if_neg (ne_of_gt hst), hsk, Nat.not_le_of_gt htk, and_false,
+            ↓reduceIte]
           omega
         · have htlek : k ≤ t := Nat.le_of_not_gt (by simpa [mem_range] using htmem)
           rw [← Finset.add_sum_erase (range k)
@@ -348,7 +349,7 @@ lemma prefixSum_boxDropPartition {n : ℕ} (lam : Nat.Partition n) {s t : ℕ} (
               exact htmem (hxt ▸ hxrange)
             simp [hxs, hxt]
           rw [hrest]
-          simp [hsk, htlek]
+          simp only [hsk, htlek, and_self, ↓reduceIte]
           omega
       · have hks : k ≤ s := Nat.le_of_not_gt (by simpa [mem_range] using hsmem)
         have htmem_false : t ∉ range k := by
