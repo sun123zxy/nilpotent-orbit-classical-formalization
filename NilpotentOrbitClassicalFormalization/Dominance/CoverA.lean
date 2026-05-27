@@ -47,9 +47,7 @@ lemma isBoxDrop_of_eq_boxDropPartition {n : ℕ} {mu lam : Nat.Partition n} {s t
     IsBoxDrop lam mu := by
   subst mu
   refine ⟨s, t, hst, ?_, ?_, ?_⟩
-  · rw [rowLen_boxDropPartition lam hst hsource htarget hgap]
-    rw [if_pos rfl]
-    have hpos : 0 < lam.rowLen s := by omega
+  · rw [rowLen_boxDropPartition lam hst hsource htarget hgap, if_pos rfl]
     omega
   · rw [rowLen_boxDropPartition lam hst hsource htarget hgap]
     simp [ne_of_gt hst]
@@ -66,10 +64,10 @@ lemma boxDropPartition_lt_original {n : ℕ} (lam : Nat.Partition n) {s t : ℕ}
   refine ⟨boxDropPartition_le_original lam hst hsource htarget hgap, ?_⟩
   intro hlam_le
   have hprefix := hlam_le (s + 1)
-  have hmid : s < s + 1 ∧ s + 1 ≤ t := by omega
+  have hmid : s < s + 1 ∧ s + 1 ≤ t :=
+    ⟨Nat.lt_succ_self s, Nat.succ_le_of_lt hst⟩
   rw [prefixSum_boxDropPartition_of_mid lam hst hsource htarget hgap hmid] at hprefix
   rw [prefixSum_succ] at hprefix
-  have hpos : 0 < lam.rowLen s := by omega
   omega
 
 lemma isCoverBoxDrop_le {n : ℕ} {lam mu : Nat.Partition n}
@@ -110,9 +108,7 @@ lemma exists_isCoverBoxDrop_between_of_lt {n : ℕ} {mu lam : Nat.Partition n}
       have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen S.s) hEq
       change (boxDropPartition lam S.hsj S.hsource htarget hgap).rowLen S.s =
         lam.rowLen S.s at hroweq
-      rw [rowLen_boxDropPartition lam S.hsj S.hsource htarget hgap] at hroweq
-      rw [if_pos rfl] at hroweq
-      have hpos : 0 < lam.rowLen S.s := by omega
+      rw [rowLen_boxDropPartition lam S.hsj S.hsource htarget hgap, if_pos rfl] at hroweq
       omega
     refine ⟨nu, ?_, hmu_le_nu, hnu_le_lam, hnu_ne_lam⟩
     refine ⟨S.s, D.j, S.hsj, S.hsource, htarget, hgap, ?_, rfl⟩
@@ -127,11 +123,11 @@ lemma exists_isCoverBoxDrop_between_of_lt {n : ℕ} {mu lam : Nat.Partition n}
     have hsource : lam.rowLen ((D.j - 1) + 1) < lam.rowLen (D.j - 1) := by
       have hjpred : (D.j - 1) + 1 = D.j := Nat.sub_add_cancel D.j_pos
       rw [hjpred]
-      omega
+      linarith
     have htarget : lam.rowLen D.j < lam.rowLen (D.j - 1) := by
-      omega
+      linarith
     have hgap : lam.rowLen D.j + 1 < lam.rowLen (D.j - 1) := by
-      omega
+      linarith
     let nu := boxDropPartition lam hst hsource htarget hgap
     have hmu_le_nu : mu ≤ nu :=
       le_boxDropPartition_of_prefix_surplus hst hsource htarget hgap h.1
@@ -143,9 +139,7 @@ lemma exists_isCoverBoxDrop_between_of_lt {n : ℕ} {mu lam : Nat.Partition n}
       have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen (D.j - 1)) hEq
       change (boxDropPartition lam hst hsource htarget hgap).rowLen (D.j - 1) =
         lam.rowLen (D.j - 1) at hroweq
-      rw [rowLen_boxDropPartition lam hst hsource htarget hgap] at hroweq
-      rw [if_pos rfl] at hroweq
-      have hpos : 0 < lam.rowLen (D.j - 1) := by omega
+      rw [rowLen_boxDropPartition lam hst hsource htarget hgap, if_pos rfl] at hroweq
       omega
     refine ⟨nu, ?_, hmu_le_nu, hnu_le_lam, hnu_ne_lam⟩
     refine ⟨D.j - 1, D.j, hst, hsource, htarget, hgap, ?_, rfl⟩
@@ -176,9 +170,7 @@ theorem isCoverBoxDrop_of_covBy {n : ℕ} {mu lam : Nat.Partition n} (h : mu ⋖
       have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen S.s) hEq
       change (boxDropPartition lam S.hsj S.hsource htarget hgap).rowLen S.s =
         lam.rowLen S.s at hroweq
-      rw [rowLen_boxDropPartition lam S.hsj S.hsource htarget hgap] at hroweq
-      rw [if_pos rfl] at hroweq
-      have hpos : 0 < lam.rowLen S.s := by omega
+      rw [rowLen_boxDropPartition lam S.hsj S.hsource htarget hgap, if_pos rfl] at hroweq
       omega
     refine ⟨S.s, D.j, S.hsj, S.hsource, htarget, hgap, ?_,
       (eq_of_between h hmu_le_nu hnu_le_lam hnu_ne_lam).symm⟩
@@ -193,11 +185,11 @@ theorem isCoverBoxDrop_of_covBy {n : ℕ} {mu lam : Nat.Partition n} (h : mu ⋖
     have hsource : lam.rowLen ((D.j - 1) + 1) < lam.rowLen (D.j - 1) := by
       have hjpred : (D.j - 1) + 1 = D.j := Nat.sub_add_cancel D.j_pos
       rw [hjpred]
-      omega
+      linarith
     have htarget : lam.rowLen D.j < lam.rowLen (D.j - 1) := by
-      omega
+      linarith
     have hgap : lam.rowLen D.j + 1 < lam.rowLen (D.j - 1) := by
-      omega
+      linarith
     have hmu_le_nu :
         mu ≤ boxDropPartition lam hst hsource htarget hgap :=
       le_boxDropPartition_of_prefix_surplus hst hsource htarget hgap h.le
@@ -210,9 +202,7 @@ theorem isCoverBoxDrop_of_covBy {n : ℕ} {mu lam : Nat.Partition n} (h : mu ⋖
       have hroweq := congrArg (fun p : Nat.Partition n => p.rowLen (D.j - 1)) hEq
       change (boxDropPartition lam hst hsource htarget hgap).rowLen (D.j - 1) =
         lam.rowLen (D.j - 1) at hroweq
-      rw [rowLen_boxDropPartition lam hst hsource htarget hgap] at hroweq
-      rw [if_pos rfl] at hroweq
-      have hpos : 0 < lam.rowLen (D.j - 1) := by omega
+      rw [rowLen_boxDropPartition lam hst hsource htarget hgap, if_pos rfl] at hroweq
       omega
     refine ⟨D.j - 1, D.j, hst, hsource, htarget, hgap, ?_,
       (eq_of_between h hmu_le_nu hnu_le_lam hnu_ne_lam).symm⟩

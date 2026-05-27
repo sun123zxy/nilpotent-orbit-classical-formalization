@@ -659,9 +659,7 @@ lemma isCMove₁_of_eq_boxDropPartition_even_exact {N : ℕ}
     IsCMove₁ lam nu := by
   subst nu
   refine ⟨s, t, hst, hseven, hteven, hexact, ?_, ?_, ?_⟩
-  · rw [rowLen_boxDropPartition lam hst hsource htarget hgap]
-    rw [if_pos rfl]
-    have hpos : 0 < lam.rowLen s := by omega
+  · rw [rowLen_boxDropPartition lam hst hsource htarget hgap, if_pos rfl]
     omega
   · rw [rowLen_boxDropPartition lam hst hsource htarget hgap]
     simp [ne_of_gt hst]

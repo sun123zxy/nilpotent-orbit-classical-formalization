@@ -367,6 +367,7 @@ lemma odd_prefixSum_succ_of_odd_of_prev_lt {N : ℕ} {p : Nat.Partition N}
   rcases heven_prev with ⟨a, ha⟩
   rcases hodd with ⟨b, hb⟩
   refine ⟨a + b, ?_⟩
-  omega
+  rw [ha, hb]
+  ring
 
 end Nat.Partition
