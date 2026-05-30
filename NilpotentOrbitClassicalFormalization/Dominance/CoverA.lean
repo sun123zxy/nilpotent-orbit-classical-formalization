@@ -12,7 +12,7 @@ open Finset
 
 namespace Nat.Partition
 
-/-- The conclusion of the A-type covering relation proposition in `docs/dominance.qmd`. -/
+/-- The conclusion of the A-type covering relation proposition. -/
 def IsBoxDrop {n : ℕ} (lam mu : Nat.Partition n) : Prop :=
   ∃ i j : ℕ, i < j ∧
     lam.rowLen i = mu.rowLen i + 1 ∧

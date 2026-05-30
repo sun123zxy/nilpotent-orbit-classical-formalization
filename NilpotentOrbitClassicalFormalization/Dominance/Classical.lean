@@ -1,4 +1,5 @@
 import NilpotentOrbitClassicalFormalization.Dominance.CoverA
+import NilpotentOrbitClassicalFormalization.Dominance.Move
 
 /-!
 # Classical-type admissible partitions
@@ -16,6 +17,13 @@ def IsCPartition {N : ℕ} (p : Nat.Partition N) : Prop :=
 /-- C-type admissible partitions of `2 * n`. -/
 abbrev CPartition (n : ℕ) := {p : Nat.Partition (2 * n) // IsCPartition p}
 
+/-- B/D-type admissibility: every even row length occurs with even multiplicity. -/
+def IsBDPartition {N : ℕ} (p : Nat.Partition N) : Prop :=
+  ∀ m : ℕ, Even m → Even (p.parts.count m)
+
+/-- B/D-type admissible partitions of `N`. -/
+abbrev BDPartition (N : ℕ) := {p : Nat.Partition N // IsBDPartition p}
+
 lemma rowLens_count_eq_parts_count {N : ℕ} (p : Nat.Partition N) (m : ℕ) :
     ((YoungDiagram.ofPartition p).rowLens.count m) = p.parts.count m := by
   rw [← Multiset.coe_count]
@@ -26,11 +34,27 @@ lemma parts_count_eq_rowLens_count {N : ℕ} (p : Nat.Partition N) (m : ℕ) :
     p.parts.count m = ((YoungDiagram.ofPartition p).rowLens.count m) :=
   (rowLens_count_eq_parts_count p m).symm
 
+lemma parts_count_zero {N : ℕ} (p : Nat.Partition N) :
+    p.parts.count 0 = 0 := by
+  rw [Multiset.count_eq_zero]
+  intro h
+  exact Nat.not_lt_zero 0 (p.parts_pos h)
+
+lemma rowLens_count_zero {N : ℕ} (p : Nat.Partition N) :
+    ((YoungDiagram.ofPartition p).rowLens.count 0) = 0 := by
+  rw [rowLens_count_eq_parts_count, parts_count_zero]
+
 lemma rowLens_count_even_of_isCPartition {N : ℕ} {p : Nat.Partition N}
     (hp : IsCPartition p) {m : ℕ} (hodd : Odd m) :
     Even ((YoungDiagram.ofPartition p).rowLens.count m) := by
   rw [rowLens_count_eq_parts_count]
   exact hp m hodd
+
+lemma rowLens_count_even_of_isBDPartition {N : ℕ} {p : Nat.Partition N}
+    (hp : IsBDPartition p) {m : ℕ} (heven : Even m) :
+    Even ((YoungDiagram.ofPartition p).rowLens.count m) := by
+  rw [rowLens_count_eq_parts_count]
+  exact hp m heven
 
 lemma cPartition_le_iff {n : ℕ} {mu lam : CPartition n} :
     mu ≤ lam ↔ (mu : Nat.Partition (2 * n)) ≤ lam :=
@@ -56,9 +80,33 @@ lemma CPartition.eq_of_between {n : ℕ} {mu lam nu : CPartition n}
     (h : mu ⋖ lam) (hmu_le_nu : mu ≤ nu) (hnu_le_lam : nu ≤ lam)
     (hnu_ne_lam : nu ≠ lam) :
     nu = mu := by
+  exact eq_of_between_subtype h hmu_le_nu hnu_le_lam hnu_ne_lam
+
+lemma bdPartition_le_iff {N : ℕ} {mu lam : BDPartition N} :
+    mu ≤ lam ↔ (mu : Nat.Partition N) ≤ lam :=
+  Iff.rfl
+
+lemma bdPartition_lt_iff {N : ℕ} {mu lam : BDPartition N} :
+    mu < lam ↔ (mu : Nat.Partition N) < lam :=
+  Iff.rfl
+
+lemma BDPartition.covBy_of_covBy_val {N : ℕ} {mu lam : BDPartition N}
+    (h : (mu : Nat.Partition N) ⋖ lam) :
+    mu ⋖ lam := by
+  rw [covBy_iff_lt_and_eq_or_eq]
+  refine ⟨h.1, ?_⟩
+  intro nu hmu_le_nu hnu_le_lam
   rcases h.eq_or_eq hmu_le_nu hnu_le_lam with hnu_eq_mu | hnu_eq_lam
-  · exact hnu_eq_mu
-  · exact False.elim (hnu_ne_lam hnu_eq_lam)
+  · left
+    exact Subtype.ext hnu_eq_mu
+  · right
+    exact Subtype.ext hnu_eq_lam
+
+lemma BDPartition.eq_of_between {N : ℕ} {mu lam nu : BDPartition N}
+    (h : mu ⋖ lam) (hmu_le_nu : mu ≤ nu) (hnu_le_lam : nu ≤ lam)
+    (hnu_ne_lam : nu ≠ lam) :
+    nu = mu := by
+  exact eq_of_between_subtype h hmu_le_nu hnu_le_lam hnu_ne_lam
 
 lemma rowLen_mem_rowLens_of_pos {N : ℕ} (p : Nat.Partition N) {i : ℕ}
     (hpos : 0 < p.rowLen i) :
@@ -108,6 +156,99 @@ lemma rowLens_count_eq_card_filter_range {N : ℕ} (p : Nat.Partition N)
     have hz := rowLen_eq_zero_of_colLen_le p (Nat.le_of_not_gt hle)
     omega
 
+lemma rowLens_count_eq_card_filter_range_of_cut {N : ℕ} (p : Nat.Partition N)
+    {c m a : ℕ} (hcut : p.rowLen c ≤ m) (hma : m < a) :
+    ((YoungDiagram.ofPartition p).rowLens.count a) =
+      ((Finset.range c).filter fun i => p.rowLen i = a).card := by
+  rw [rowLens_count_eq_card_filter p a]
+  congr 1
+  ext i
+  rw [Finset.mem_filter, Finset.mem_filter]
+  constructor
+  · rintro ⟨hirange, hrow⟩
+    refine ⟨?_, hrow⟩
+    rw [Finset.mem_range]
+    by_contra hci
+    have hle : p.rowLen i ≤ p.rowLen c :=
+      (YoungDiagram.ofPartition p).rowLen_anti c i (Nat.le_of_not_gt hci)
+    omega
+  · rintro ⟨hic, hrow⟩
+    refine ⟨?_, hrow⟩
+    rw [Finset.mem_range, ← YoungDiagram.mem_iff_lt_colLen,
+      YoungDiagram.mem_iff_lt_rowLen]
+    change 0 < p.rowLen i
+    omega
+
+lemma even_evenRows_card_above_even_cut {N : ℕ} {p : Nat.Partition N}
+    (hp : IsBDPartition p) {c m : ℕ}
+    (hcut : p.rowLen c ≤ m)
+    (habove : ∀ r : ℕ, r < c → m < p.rowLen r) :
+    Even (((Finset.range c).filter fun r => Even (p.rowLen r)).card) := by
+  classical
+  let vals := (Finset.range (p.rowLen 0 + 1)).filter fun a => Even a ∧ m < a
+  have hfiber_even : ∀ a ∈ vals,
+      Even (((Finset.range c).filter fun i => p.rowLen i = a).card) := by
+    intro a ha
+    have ha' := Finset.mem_filter.mp ha
+    rw [← rowLens_count_eq_card_filter_range_of_cut p hcut ha'.2.2]
+    exact rowLens_count_even_of_isBDPartition hp ha'.2.1
+  have hsum_even : Even (∑ a ∈ vals,
+      ((Finset.range c).filter fun i => p.rowLen i = a).card) :=
+    Finset.even_sum _ hfiber_even
+  rw [Finset.sum_card_fiberwise_eq_card_filter] at hsum_even
+  convert hsum_even using 2
+  ext r
+  dsimp [vals]
+  rw [Finset.mem_filter, Finset.mem_filter]
+  constructor
+  · rintro ⟨hrc, heven_row⟩
+    refine ⟨hrc, ?_⟩
+    rw [Finset.mem_filter]
+    constructor
+    · rw [Finset.mem_range]
+      have hle : p.rowLen r ≤ p.rowLen 0 :=
+        (YoungDiagram.ofPartition p).rowLen_anti 0 r (Nat.zero_le r)
+      omega
+    · exact ⟨heven_row, habove r (Finset.mem_range.mp hrc)⟩
+  · rintro ⟨hrc, hmem⟩
+    exact ⟨hrc, (Finset.mem_filter.mp hmem).2.1⟩
+
+lemma even_prefixSum_iff_even_cut_index_of_isBDPartition {N : ℕ}
+    {p : Nat.Partition N} (hp : IsBDPartition p) {c m : ℕ}
+    (hcut : p.rowLen c ≤ m)
+    (habove : ∀ r : ℕ, r < c → m < p.rowLen r) :
+    Even (p.prefixSum c) ↔ Even c := by
+  let oddRows := (Finset.range c).filter fun r => Odd (p.rowLen r)
+  let evenRows := (Finset.range c).filter fun r => Even (p.rowLen r)
+  have hprefix : Even (p.prefixSum c) ↔ Even oddRows.card := by
+    dsimp [oddRows]
+    exact even_prefixSum_iff_even_oddRows_card p c
+  rw [hprefix]
+  have hnot : ((Finset.range c).filter fun r => ¬ Odd (p.rowLen r)) = evenRows := by
+    dsimp [evenRows]
+    ext r
+    rw [Finset.mem_filter, Finset.mem_filter]
+    simp
+  have hcard : c = oddRows.card + evenRows.card := by
+    have h := Finset.card_filter_add_card_filter_not (s := Finset.range c)
+      (p := fun r => Odd (p.rowLen r))
+    rw [hnot] at h
+    dsimp [oddRows, evenRows]
+    rw [Finset.card_range] at h
+    exact h.symm
+  have hevenRows : Even evenRows.card := by
+    simpa [evenRows] using even_evenRows_card_above_even_cut hp hcut habove
+  change Even oddRows.card ↔ Even c
+  rw [hcard]
+  constructor
+  · intro hodd
+    exact Even.add hodd hevenRows
+  · intro hsum
+    rcases hsum with ⟨s, hs⟩
+    rcases hevenRows with ⟨t, ht⟩
+    refine ⟨s - t, ?_⟩
+    omega
+
 lemma rowLens_count_eq_one_of_isolated {N : ℕ} (p : Nat.Partition N) {i m : ℕ}
     (hi : p.rowLen i = m) (hpos : 0 < m)
     (hprev : i = 0 ∨ p.rowLen (i - 1) ≠ m)
@@ -144,6 +285,17 @@ lemma rowLens_count_eq_one_of_isolated {N : ℕ} (p : Nat.Partition N) {i m : �
       exact ⟨hirange, hi⟩
   rw [hfilter]
   simp
+
+lemma not_isolated_even_row_of_isBDPartition {N : ℕ} {p : Nat.Partition N}
+    (hp : IsBDPartition p) {i m : ℕ} (hi : p.rowLen i = m)
+    (heven : Even m) (hpos : 0 < m)
+    (hprev : i = 0 ∨ p.rowLen (i - 1) ≠ m)
+    (hnext : p.rowLen (i + 1) < m) :
+    False := by
+  have hcount := rowLens_count_eq_one_of_isolated p hi hpos hprev hnext
+  have heven_count := rowLens_count_even_of_isBDPartition hp heven
+  rw [hcount] at heven_count
+  exact Nat.not_even_one heven_count
 
 /--
 In a C-partition, an odd row length cannot occur as an isolated bottom row of its
@@ -235,6 +387,55 @@ lemma even_sub_of_odd_plateau {N : ℕ} {p : Nat.Partition N}
   have hcount := rowLens_count_eq_sub_of_plateau p hrow hprev hnext
   rw [← hcount]
   exact rowLens_count_even_of_isCPartition hp hodd
+
+lemma even_sub_of_even_plateau {N : ℕ} {p : Nat.Partition N}
+    (hp : IsBDPartition p) {a b m : ℕ} (heven : Even m)
+    (hrow : ∀ r : ℕ, a ≤ r → r < b → p.rowLen r = m)
+    (hprev : a = 0 ∨ m < p.rowLen (a - 1))
+    (hnext : p.rowLen b < m) :
+    Even (b - a) := by
+  have hcount := rowLens_count_eq_sub_of_plateau p hrow hprev hnext
+  rw [← hcount]
+  exact rowLens_count_even_of_isBDPartition hp heven
+
+lemma exists_prev_rowLen_eq_of_even_of_next_lt {N : ℕ} {p : Nat.Partition N}
+    (hp : IsBDPartition p) {i : ℕ} (heven : Even (p.rowLen i))
+    (hnext : p.rowLen (i + 1) < p.rowLen i) :
+    0 < i ∧ p.rowLen (i - 1) = p.rowLen i := by
+  by_contra hbad
+  have hprev : i = 0 ∨ p.rowLen (i - 1) ≠ p.rowLen i := by
+    by_cases hi0 : i = 0
+    · exact Or.inl hi0
+    · refine Or.inr ?_
+      intro heq
+      exact hbad ⟨Nat.pos_of_ne_zero hi0, heq⟩
+  have hcount :
+      ((YoungDiagram.ofPartition p).rowLens.count (p.rowLen i)) = 1 :=
+    rowLens_count_eq_one_of_isolated p rfl (by omega) hprev hnext
+  have heven_count := rowLens_count_even_of_isBDPartition hp heven
+  rw [hcount] at heven_count
+  exact Nat.not_even_one heven_count
+
+lemma next_rowLen_eq_of_even_of_prev_lt {N : ℕ} {p : Nat.Partition N}
+    (hp : IsBDPartition p) {i : ℕ} (heven : Even (p.rowLen i))
+    (hprev : p.rowLen i < p.rowLen (i - 1)) :
+    p.rowLen (i + 1) = p.rowLen i := by
+  by_cases hzero : p.rowLen i = 0
+  · have hnext_le : p.rowLen (i + 1) ≤ p.rowLen i :=
+      (YoungDiagram.ofPartition p).rowLen_anti i (i + 1) (Nat.le_succ i)
+    omega
+  by_contra hbad
+  have hnext_le : p.rowLen (i + 1) ≤ p.rowLen i :=
+    (YoungDiagram.ofPartition p).rowLen_anti i (i + 1) (Nat.le_succ i)
+  have hnext : p.rowLen (i + 1) < p.rowLen i :=
+    lt_of_le_of_ne hnext_le hbad
+  have hcount :
+      ((YoungDiagram.ofPartition p).rowLens.count (p.rowLen i)) = 1 :=
+    rowLens_count_eq_one_of_isolated p rfl (Nat.pos_of_ne_zero hzero)
+      (Or.inr (ne_of_gt hprev)) hnext
+  have heven_count := rowLens_count_even_of_isBDPartition hp heven
+  rw [hcount] at heven_count
+  exact Nat.not_even_one heven_count
 
 /-- Choose the top row of the constant-height plateau ending at `k`. -/
 lemma exists_plateau_start {N : ℕ} (p : Nat.Partition N) {k : ℕ} :

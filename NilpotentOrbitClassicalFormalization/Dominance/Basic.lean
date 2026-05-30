@@ -536,5 +536,24 @@ lemma prefix_surplus₂_of_rowLen_le_before_target_of_two_rowLen_lt {n : ℕ}
   · exact hstrict₁
   · exact hstrict₂
 
+lemma prefix_surplus₂_of_first_lt_source {n : ℕ} {mu lam : Nat.Partition n}
+    {i0 s j : ℕ} (hstrict : mu.rowLen i0 < lam.rowLen i0) (hi0s : i0 ≤ s)
+    (hi0_lt_s : i0 < s) (hsrow : lam.rowLen s = lam.rowLen i0)
+    (hrowBefore : ∀ r : ℕ, r < j → mu.rowLen r ≤ lam.rowLen r) :
+    ∀ k : ℕ, s < k → k ≤ j → mu.prefixSum k + 2 ≤ lam.prefixSum k := by
+  have hi0s_succ : i0 + 1 ≤ s := Nat.succ_le_iff.mpr hi0_lt_s
+  have hrow_succ : lam.rowLen (i0 + 1) = lam.rowLen i0 := by
+    have hle₁ : lam.rowLen (i0 + 1) ≤ lam.rowLen i0 :=
+      (YoungDiagram.ofPartition lam).rowLen_anti i0 (i0 + 1) (Nat.le_succ i0)
+    have hle₂ : lam.rowLen s ≤ lam.rowLen (i0 + 1) :=
+      (YoungDiagram.ofPartition lam).rowLen_anti (i0 + 1) s hi0s_succ
+    omega
+  have hstrict_succ : mu.rowLen (i0 + 1) < lam.rowLen (i0 + 1) := by
+    have hmu_le : mu.rowLen (i0 + 1) ≤ mu.rowLen i0 :=
+      (YoungDiagram.ofPartition mu).rowLen_anti i0 (i0 + 1) (Nat.le_succ i0)
+    omega
+  exact prefix_surplus₂_of_rowLen_le_before_target_of_two_rowLen_lt
+    (i₁ := i0) (i₂ := i0 + 1) (s := s) (j := j) hi0s hi0s_succ
+    (by omega) hrowBefore hstrict hstrict_succ
 
 end Nat.Partition

@@ -1,31 +1,34 @@
-import NilpotentOrbitClassicalFormalization.Dominance.CoverC.Surplus
+import NilpotentOrbitClassicalFormalization.Dominance.CoverBD.Surplus
 
 /-!
-# C-type move admissibility
+# B/D-type move admissibility
 
-Split from `Dominance/CoverC.lean` to keep the C-type cover formalization navigable.
+This file records that each B/D move preserves B/D admissibility.
 -/
 
 namespace Nat.Partition
 
-lemma isCPartition_of_isCMove₁ {N : ℕ} {lam mu : Nat.Partition N}
-    (hlam : IsCPartition lam) (h : IsCMove₁ lam mu) :
-    IsCPartition mu := by
-  intro m hmodd
+lemma isBDPartition_of_isBDMove₁ {N : ℕ} {lam mu : Nat.Partition N}
+    (hlam : IsBDPartition lam) (h : IsBDMove₁ lam mu) :
+    IsBDPartition mu := by
+  intro m hm_even
+  by_cases hmzero : m = 0
+  · rw [hmzero, parts_count_zero]
+    exact ⟨0, rfl⟩
   rw [parts_count_eq_rowLens_count]
   rcases h with
-    ⟨s, t, hst, hseven, hteven, hexact, hs, ht, hrest⟩
+    ⟨s, t, hst, hs_odd, ht_odd, hexact, hs, ht, hrest⟩
   let K := max ((YoungDiagram.ofPartition mu).colLen 0)
     ((YoungDiagram.ofPartition lam).colLen 0)
   have hKmu : (YoungDiagram.ofPartition mu).colLen 0 ≤ K := le_max_left _ _
   have hKlam : (YoungDiagram.ofPartition lam).colLen 0 ≤ K := le_max_right _ _
-  have hmpos : 0 < m := hmodd.pos
+  have hmpos : 0 < m := Nat.pos_of_ne_zero hmzero
   have hcount_mu := rowLens_count_eq_card_filter_range mu hKmu hmpos
   have hcount_lam := rowLens_count_eq_card_filter_range lam hKlam hmpos
   rw [hcount_mu]
   have heven_lam : Even ((Finset.range K).filter fun r => lam.rowLen r = m).card := by
     rw [← hcount_lam]
-    exact rowLens_count_even_of_isCPartition hlam hmodd
+    exact rowLens_count_even_of_isBDPartition hlam hm_even
   by_cases hm : m = lam.rowLen t + 1
   · let base := (Finset.range K).filter fun r => lam.rowLen r = m
     have hsrow : mu.rowLen s = m := by omega
@@ -113,38 +116,41 @@ lemma isCPartition_of_isCMove₁ {N : ℕ} {lam mu : Nat.Partition N}
         by_cases hrs : r = s
         · subst r
           exfalso
-          rcases hmodd with ⟨a, ha⟩
-          rcases hseven with ⟨b, hb⟩
+          rcases hm_even with ⟨a, ha⟩
+          rcases hs_odd with ⟨b, hb⟩
           omega
         · by_cases hrt : r = t
           · subst r
             exfalso
-            rcases hmodd with ⟨a, ha⟩
-            rcases hteven with ⟨b, hb⟩
+            rcases hm_even with ⟨a, ha⟩
+            rcases ht_odd with ⟨b, hb⟩
             omega
           · have hrlam := hrest r hrs hrt
             omega
     rw [hfilter]
     exact heven_lam
 
-lemma isCPartition_of_isCMove₂ {N : ℕ} {lam mu : Nat.Partition N}
-    (hlam : IsCPartition lam) (h : IsCMove₂ lam mu) :
-    IsCPartition mu := by
-  intro m hmodd
+lemma isBDPartition_of_isBDMove₂ {N : ℕ} {lam mu : Nat.Partition N}
+    (hlam : IsBDPartition lam) (h : IsBDMove₂ lam mu) :
+    IsBDPartition mu := by
+  intro m hm_even
+  by_cases hmzero : m = 0
+  · rw [hmzero, parts_count_zero]
+    exact ⟨0, rfl⟩
   rw [parts_count_eq_rowLens_count]
   rcases h with
-    ⟨s, t, _hst, hseven, hteven, _hgap, hs, ht, hrest⟩
+    ⟨s, t, _hst, hs_odd, ht_odd, _hgap, hs, ht, hrest⟩
   let K := max ((YoungDiagram.ofPartition mu).colLen 0)
     ((YoungDiagram.ofPartition lam).colLen 0)
   have hKmu : (YoungDiagram.ofPartition mu).colLen 0 ≤ K := le_max_left _ _
   have hKlam : (YoungDiagram.ofPartition lam).colLen 0 ≤ K := le_max_right _ _
-  have hmpos : 0 < m := hmodd.pos
+  have hmpos : 0 < m := Nat.pos_of_ne_zero hmzero
   have hcount_mu := rowLens_count_eq_card_filter_range mu hKmu hmpos
   have hcount_lam := rowLens_count_eq_card_filter_range lam hKlam hmpos
   rw [hcount_mu]
   have heven_lam : Even ((Finset.range K).filter fun r => lam.rowLen r = m).card := by
     rw [← hcount_lam]
-    exact rowLens_count_even_of_isCPartition hlam hmodd
+    exact rowLens_count_even_of_isBDPartition hlam hm_even
   have hfilter :
       ((Finset.range K).filter fun r => mu.rowLen r = m) =
         ((Finset.range K).filter fun r => lam.rowLen r = m) := by
@@ -156,14 +162,14 @@ lemma isCPartition_of_isCMove₂ {N : ℕ} {lam mu : Nat.Partition N}
       by_cases hrs : r = s
       · subst r
         exfalso
-        rcases hmodd with ⟨a, ha⟩
-        rcases hseven with ⟨b, hb⟩
+        rcases hm_even with ⟨a, ha⟩
+        rcases hs_odd with ⟨b, hb⟩
         omega
       · by_cases hrt : r = t
         · subst r
           exfalso
-          rcases hmodd with ⟨a, ha⟩
-          rcases hteven with ⟨b, hb⟩
+          rcases hm_even with ⟨a, ha⟩
+          rcases ht_odd with ⟨b, hb⟩
           omega
         · have hrlam := hrest r hrs hrt
           omega
@@ -172,38 +178,41 @@ lemma isCPartition_of_isCMove₂ {N : ℕ} {lam mu : Nat.Partition N}
       by_cases hrs : r = s
       · subst r
         exfalso
-        rcases hmodd with ⟨a, ha⟩
-        rcases hseven with ⟨b, hb⟩
+        rcases hm_even with ⟨a, ha⟩
+        rcases hs_odd with ⟨b, hb⟩
         omega
       · by_cases hrt : r = t
         · subst r
           exfalso
-          rcases hmodd with ⟨a, ha⟩
-          rcases hteven with ⟨b, hb⟩
+          rcases hm_even with ⟨a, ha⟩
+          rcases ht_odd with ⟨b, hb⟩
           omega
         · have hrlam := hrest r hrs hrt
           omega
   rw [hfilter]
   exact heven_lam
 
-lemma isCPartition_of_isCMove₃ {N : ℕ} {lam mu : Nat.Partition N}
-    (hlam : IsCPartition lam) (h : IsCMove₃ lam mu) :
-    IsCPartition mu := by
-  intro m hmodd
+lemma isBDPartition_of_isBDMove₃ {N : ℕ} {lam mu : Nat.Partition N}
+    (hlam : IsBDPartition lam) (h : IsBDMove₃ lam mu) :
+    IsBDPartition mu := by
+  intro m hm_even
+  by_cases hmzero : m = 0
+  · rw [hmzero, parts_count_zero]
+    exact ⟨0, rfl⟩
   rw [parts_count_eq_rowLens_count]
   rcases h with
-    ⟨s, t, hst, hseven, htodd, ht_pair, _hgap, hs, ht, ht1, hrest⟩
+    ⟨s, t, hst, hs_odd, ht_even, ht_pair, _hgap, hs, ht, ht1, hrest⟩
   let K := max ((YoungDiagram.ofPartition mu).colLen 0)
     ((YoungDiagram.ofPartition lam).colLen 0)
   have hKmu : (YoungDiagram.ofPartition mu).colLen 0 ≤ K := le_max_left _ _
   have hKlam : (YoungDiagram.ofPartition lam).colLen 0 ≤ K := le_max_right _ _
-  have hmpos : 0 < m := hmodd.pos
+  have hmpos : 0 < m := Nat.pos_of_ne_zero hmzero
   have hcount_mu := rowLens_count_eq_card_filter_range mu hKmu hmpos
   have hcount_lam := rowLens_count_eq_card_filter_range lam hKlam hmpos
   rw [hcount_mu]
   have heven_lam : Even ((Finset.range K).filter fun r => lam.rowLen r = m).card := by
     rw [← hcount_lam]
-    exact rowLens_count_even_of_isCPartition hlam hmodd
+    exact rowLens_count_even_of_isBDPartition hlam hm_even
   by_cases hm : m = lam.rowLen t
   · let base := (Finset.range K).filter fun r => mu.rowLen r = m
     have htK : t ∈ Finset.range K := by
@@ -245,8 +254,8 @@ lemma isCPartition_of_isCMove₃ {N : ℕ} {lam mu : Nat.Partition N}
           · by_cases hrs : r = s
             · subst r
               exfalso
-              rcases hmodd with ⟨a, ha⟩
-              rcases hseven with ⟨b, hb⟩
+              rcases hm_even with ⟨a, ha⟩
+              rcases hs_odd with ⟨b, hb⟩
               omega
             · have hrmu := hrest r hrs hrt hrt1
               exact Or.inr (Or.inr (by
@@ -259,8 +268,8 @@ lemma isCPartition_of_isCMove₃ {N : ℕ} {lam mu : Nat.Partition N}
           by_cases hrs : r = s
           · subst r
             exfalso
-            rcases hmodd with ⟨a, ha⟩
-            rcases hseven with ⟨b, hb⟩
+            rcases hm_even with ⟨a, ha⟩
+            rcases hs_odd with ⟨b, hb⟩
             omega
           · by_cases hrt : r = t
             · subst r
@@ -296,20 +305,20 @@ lemma isCPartition_of_isCMove₃ {N : ℕ} {lam mu : Nat.Partition N}
         by_cases hrs : r = s
         · subst r
           exfalso
-          rcases hmodd with ⟨a, ha⟩
-          rcases hseven with ⟨b, hb⟩
+          rcases hm_even with ⟨a, ha⟩
+          rcases hs_odd with ⟨b, hb⟩
           omega
         · by_cases hrt : r = t
           · subst r
             exfalso
-            rcases hmodd with ⟨a, ha⟩
-            rcases htodd with ⟨b, hb⟩
+            rcases hm_even with ⟨a, ha⟩
+            rcases ht_even with ⟨b, hb⟩
             omega
           · by_cases hrt1 : r = t + 1
             · subst r
               exfalso
-              rcases hmodd with ⟨a, ha⟩
-              rcases htodd with ⟨b, hb⟩
+              rcases hm_even with ⟨a, ha⟩
+              rcases ht_even with ⟨b, hb⟩
               omega
             · have hrlam := hrest r hrs hrt hrt1
               omega
@@ -318,8 +327,8 @@ lemma isCPartition_of_isCMove₃ {N : ℕ} {lam mu : Nat.Partition N}
         by_cases hrs : r = s
         · subst r
           exfalso
-          rcases hmodd with ⟨a, ha⟩
-          rcases hseven with ⟨b, hb⟩
+          rcases hm_even with ⟨a, ha⟩
+          rcases hs_odd with ⟨b, hb⟩
           omega
         · by_cases hrt : r = t
           · subst r
@@ -334,24 +343,27 @@ lemma isCPartition_of_isCMove₃ {N : ℕ} {lam mu : Nat.Partition N}
     rw [hfilter]
     exact heven_lam
 
-lemma isCPartition_of_isCMove₄ {N : ℕ} {lam mu : Nat.Partition N}
-    (hlam : IsCPartition lam) (h : IsCMove₄ lam mu) :
-    IsCPartition mu := by
-  intro m hmodd
+lemma isBDPartition_of_isBDMove₄ {N : ℕ} {lam mu : Nat.Partition N}
+    (hlam : IsBDPartition lam) (h : IsBDMove₄ lam mu) :
+    IsBDPartition mu := by
+  intro m hm_even
+  by_cases hmzero : m = 0
+  · rw [hmzero, parts_count_zero]
+    exact ⟨0, rfl⟩
   rw [parts_count_eq_rowLens_count]
   rcases h with
-    ⟨s, t, hst, hsodd, hs_pair, hteven, _hgap, hs, hs1, ht, hrest⟩
+    ⟨s, t, hst, hs_even, hs_pair, ht_odd, _hgap, hs, hs1, ht, hrest⟩
   let K := max ((YoungDiagram.ofPartition mu).colLen 0)
     ((YoungDiagram.ofPartition lam).colLen 0)
   have hKmu : (YoungDiagram.ofPartition mu).colLen 0 ≤ K := le_max_left _ _
   have hKlam : (YoungDiagram.ofPartition lam).colLen 0 ≤ K := le_max_right _ _
-  have hmpos : 0 < m := hmodd.pos
+  have hmpos : 0 < m := Nat.pos_of_ne_zero hmzero
   have hcount_mu := rowLens_count_eq_card_filter_range mu hKmu hmpos
   have hcount_lam := rowLens_count_eq_card_filter_range lam hKlam hmpos
   rw [hcount_mu]
   have heven_lam : Even ((Finset.range K).filter fun r => lam.rowLen r = m).card := by
     rw [← hcount_lam]
-    exact rowLens_count_even_of_isCPartition hlam hmodd
+    exact rowLens_count_even_of_isBDPartition hlam hm_even
   by_cases hm : m = lam.rowLen s
   · let base := (Finset.range K).filter fun r => mu.rowLen r = m
     have hsK : s ∈ Finset.range K := by
@@ -393,8 +405,8 @@ lemma isCPartition_of_isCMove₄ {N : ℕ} {lam mu : Nat.Partition N}
           · by_cases hrt : r = t
             · subst r
               exfalso
-              rcases hmodd with ⟨a, ha⟩
-              rcases hteven with ⟨b, hb⟩
+              rcases hm_even with ⟨a, ha⟩
+              rcases ht_odd with ⟨b, hb⟩
               omega
             · have hrmu := hrest r hrs hrs1 hrt
               exact Or.inr (Or.inr (by
@@ -413,8 +425,8 @@ lemma isCPartition_of_isCMove₄ {N : ℕ} {lam mu : Nat.Partition N}
             · by_cases hrt : r = t
               · subst r
                 exfalso
-                rcases hmodd with ⟨a, ha⟩
-                rcases hteven with ⟨b, hb⟩
+                rcases hm_even with ⟨a, ha⟩
+                rcases ht_odd with ⟨b, hb⟩
                 omega
               · have hrlam := hrest r hrs hrs1 hrt
                 exact ⟨hrK, by omega⟩
@@ -444,20 +456,20 @@ lemma isCPartition_of_isCMove₄ {N : ℕ} {lam mu : Nat.Partition N}
         by_cases hrs : r = s
         · subst r
           exfalso
-          rcases hmodd with ⟨a, ha⟩
-          rcases hsodd with ⟨b, hb⟩
+          rcases hm_even with ⟨a, ha⟩
+          rcases hs_even with ⟨b, hb⟩
           omega
         · by_cases hrs1 : r = s + 1
           · subst r
             exfalso
-            rcases hmodd with ⟨a, ha⟩
-            rcases hsodd with ⟨b, hb⟩
+            rcases hm_even with ⟨a, ha⟩
+            rcases hs_even with ⟨b, hb⟩
             omega
           · by_cases hrt : r = t
             · subst r
               exfalso
-              rcases hmodd with ⟨a, ha⟩
-              rcases hteven with ⟨b, hb⟩
+              rcases hm_even with ⟨a, ha⟩
+              rcases ht_odd with ⟨b, hb⟩
               omega
             · have hrlam := hrest r hrs hrs1 hrt
               omega
@@ -474,32 +486,35 @@ lemma isCPartition_of_isCMove₄ {N : ℕ} {lam mu : Nat.Partition N}
           · by_cases hrt : r = t
             · subst r
               exfalso
-              rcases hmodd with ⟨a, ha⟩
-              rcases hteven with ⟨b, hb⟩
+              rcases hm_even with ⟨a, ha⟩
+              rcases ht_odd with ⟨b, hb⟩
               omega
             · have hrlam := hrest r hrs hrs1 hrt
               omega
     rw [hfilter]
     exact heven_lam
 
-lemma isCPartition_of_isCMove₅ {N : ℕ} {lam mu : Nat.Partition N}
-    (hlam : IsCPartition lam) (h : IsCMove₅ lam mu) :
-    IsCPartition mu := by
-  intro m hmodd
+lemma isBDPartition_of_isBDMove₅ {N : ℕ} {lam mu : Nat.Partition N}
+    (hlam : IsBDPartition lam) (h : IsBDMove₅ lam mu) :
+    IsBDPartition mu := by
+  intro m hm_even
+  by_cases hmzero : m = 0
+  · rw [hmzero, parts_count_zero]
+    exact ⟨0, rfl⟩
   rw [parts_count_eq_rowLens_count]
   rcases h with
-    ⟨s, t, hst, hsodd, hs_pair, htodd, ht_pair, hgap, hs, hs1, ht, ht1, hrest⟩
+    ⟨s, t, hst, hs_even, hs_pair, ht_even, ht_pair, hgap, hs, hs1, ht, ht1, hrest⟩
   let K := max ((YoungDiagram.ofPartition mu).colLen 0)
     ((YoungDiagram.ofPartition lam).colLen 0)
   have hKmu : (YoungDiagram.ofPartition mu).colLen 0 ≤ K := le_max_left _ _
   have hKlam : (YoungDiagram.ofPartition lam).colLen 0 ≤ K := le_max_right _ _
-  have hmpos : 0 < m := hmodd.pos
+  have hmpos : 0 < m := Nat.pos_of_ne_zero hmzero
   have hcount_mu := rowLens_count_eq_card_filter_range mu hKmu hmpos
   have hcount_lam := rowLens_count_eq_card_filter_range lam hKlam hmpos
   rw [hcount_mu]
   have heven_lam : Even ((Finset.range K).filter fun r => lam.rowLen r = m).card := by
     rw [← hcount_lam]
-    exact rowLens_count_even_of_isCPartition hlam hmodd
+    exact rowLens_count_even_of_isBDPartition hlam hm_even
   by_cases hms : m = lam.rowLen s
   · let base := (Finset.range K).filter fun r => mu.rowLen r = m
     have hsK : s ∈ Finset.range K := by
@@ -681,26 +696,26 @@ lemma isCPartition_of_isCMove₅ {N : ℕ} {lam mu : Nat.Partition N}
           by_cases hrs : r = s
           · subst r
             exfalso
-            rcases hmodd with ⟨a, ha⟩
-            rcases hsodd with ⟨b, hb⟩
+            rcases hm_even with ⟨a, ha⟩
+            rcases hs_even with ⟨b, hb⟩
             omega
           · by_cases hrs1 : r = s + 1
             · subst r
               exfalso
-              rcases hmodd with ⟨a, ha⟩
-              rcases hsodd with ⟨b, hb⟩
+              rcases hm_even with ⟨a, ha⟩
+              rcases hs_even with ⟨b, hb⟩
               omega
             · by_cases hrt : r = t
               · subst r
                 exfalso
-                rcases hmodd with ⟨a, ha⟩
-                rcases htodd with ⟨b, hb⟩
+                rcases hm_even with ⟨a, ha⟩
+                rcases ht_even with ⟨b, hb⟩
                 omega
               · by_cases hrt1 : r = t + 1
                 · subst r
                   exfalso
-                  rcases hmodd with ⟨a, ha⟩
-                  rcases htodd with ⟨b, hb⟩
+                  rcases hm_even with ⟨a, ha⟩
+                  rcases ht_even with ⟨b, hb⟩
                   omega
                 · have hrlam := hrest r hrs hrs1 hrt hrt1
                   omega
@@ -727,70 +742,75 @@ lemma isCPartition_of_isCMove₅ {N : ℕ} {lam mu : Nat.Partition N}
       rw [hfilter]
       exact heven_lam
 
-lemma CPartition.isCMove_of_between_val {n : ℕ} {mu lam nu : CPartition n}
+lemma BDPartition.isBDMove_of_between_val {N : ℕ} {mu lam nu : BDPartition N}
     (h : mu ⋖ lam)
-    (hmu_le_nu : (mu : Nat.Partition (2 * n)) ≤ (nu : Nat.Partition (2 * n)))
-    (hnu_le_lam : (nu : Nat.Partition (2 * n)) ≤ (lam : Nat.Partition (2 * n)))
-    (hnu_ne_lam : (nu : Nat.Partition (2 * n)) ≠ (lam : Nat.Partition (2 * n)))
-    (hmove : IsCMove lam nu) :
-    IsCMove lam mu := by
-  exact CPartition.isCMove_of_between h hmu_le_nu hnu_le_lam
+    (hmu_le_nu : (mu : Nat.Partition N) ≤ (nu : Nat.Partition N))
+    (hnu_le_lam : (nu : Nat.Partition N) ≤ (lam : Nat.Partition N))
+    (hnu_ne_lam : (nu : Nat.Partition N) ≠ (lam : Nat.Partition N))
+    (hmove : IsBDMove lam nu) :
+    IsBDMove lam mu := by
+  exact BDPartition.isBDMove_of_between h hmu_le_nu hnu_le_lam
     (fun hEq => hnu_ne_lam (congrArg Subtype.val hEq)) hmove
 
-lemma CPartition.isCMove_of_between_isCMove₁ {n : ℕ} {mu lam : CPartition n}
-    {nu : Nat.Partition (2 * n)} (h : mu ⋖ lam)
-    (hmu_le_nu : (mu : Nat.Partition (2 * n)) ≤ nu)
-    (hnu_le_lam : nu ≤ (lam : Nat.Partition (2 * n)))
-    (hnu_ne_lam : nu ≠ (lam : Nat.Partition (2 * n)))
-    (hmove : IsCMove₁ (lam : Nat.Partition (2 * n)) nu) :
-    IsCMove lam mu := by
-  let nuC : CPartition n := ⟨nu, isCPartition_of_isCMove₁ lam.property hmove⟩
-  exact CPartition.isCMove_of_between_val (nu := nuC) h hmu_le_nu hnu_le_lam
+lemma BDPartition.isBDMove_of_between_isBDMove₁ {N : ℕ} {mu lam : BDPartition N}
+    {nu : Nat.Partition N} (h : mu ⋖ lam)
+    (hmu_le_nu : (mu : Nat.Partition N) ≤ nu)
+    (hnu_le_lam : nu ≤ (lam : Nat.Partition N))
+    (hnu_ne_lam : nu ≠ (lam : Nat.Partition N))
+    (hmove : IsBDMove₁ (lam : Nat.Partition N) nu) :
+    IsBDMove lam mu := by
+  let nuC : BDPartition N := ⟨nu, isBDPartition_of_isBDMove₁ lam.property hmove⟩
+  exact BDPartition.isBDMove_of_between_val (nu := nuC) h hmu_le_nu hnu_le_lam
     hnu_ne_lam (Or.inl hmove)
 
-lemma CPartition.isCMove_of_between_isCMove₂ {n : ℕ} {mu lam : CPartition n}
-    {nu : Nat.Partition (2 * n)} (h : mu ⋖ lam)
-    (hmu_le_nu : (mu : Nat.Partition (2 * n)) ≤ nu)
-    (hnu_le_lam : nu ≤ (lam : Nat.Partition (2 * n)))
-    (hnu_ne_lam : nu ≠ (lam : Nat.Partition (2 * n)))
-    (hmove : IsCMove₂ (lam : Nat.Partition (2 * n)) nu) :
-    IsCMove lam mu := by
-  let nuC : CPartition n := ⟨nu, isCPartition_of_isCMove₂ lam.property hmove⟩
-  exact CPartition.isCMove_of_between_val (nu := nuC) h hmu_le_nu hnu_le_lam
+lemma BDPartition.isBDMove_of_between_isBDMove₂ {N : ℕ} {mu lam : BDPartition N}
+    {nu : Nat.Partition N} (h : mu ⋖ lam)
+    (hmu_le_nu : (mu : Nat.Partition N) ≤ nu)
+    (hnu_le_lam : nu ≤ (lam : Nat.Partition N))
+    (hnu_ne_lam : nu ≠ (lam : Nat.Partition N))
+    (hmove : IsBDMove₂ (lam : Nat.Partition N) nu) :
+    IsBDMove lam mu := by
+  let nuC : BDPartition N := ⟨nu, isBDPartition_of_isBDMove₂ lam.property hmove⟩
+  exact BDPartition.isBDMove_of_between_val (nu := nuC) h hmu_le_nu hnu_le_lam
     hnu_ne_lam (Or.inr (Or.inl hmove))
 
-lemma CPartition.isCMove_of_between_isCMove₃ {n : ℕ} {mu lam : CPartition n}
-    {nu : Nat.Partition (2 * n)} (h : mu ⋖ lam)
-    (hmu_le_nu : (mu : Nat.Partition (2 * n)) ≤ nu)
-    (hnu_le_lam : nu ≤ (lam : Nat.Partition (2 * n)))
-    (hnu_ne_lam : nu ≠ (lam : Nat.Partition (2 * n)))
-    (hmove : IsCMove₃ (lam : Nat.Partition (2 * n)) nu) :
-    IsCMove lam mu := by
-  let nuC : CPartition n := ⟨nu, isCPartition_of_isCMove₃ lam.property hmove⟩
-  exact CPartition.isCMove_of_between_val (nu := nuC) h hmu_le_nu hnu_le_lam
+lemma BDPartition.isBDMove_of_between_isBDMove₃ {N : ℕ} {mu lam : BDPartition N}
+    {nu : Nat.Partition N} (h : mu ⋖ lam)
+    (hmu_le_nu : (mu : Nat.Partition N) ≤ nu)
+    (hnu_le_lam : nu ≤ (lam : Nat.Partition N))
+    (hnu_ne_lam : nu ≠ (lam : Nat.Partition N))
+    (hmove : IsBDMove₃ (lam : Nat.Partition N) nu) :
+    IsBDMove lam mu := by
+  let nuC : BDPartition N := ⟨nu, isBDPartition_of_isBDMove₃ lam.property hmove⟩
+  exact BDPartition.isBDMove_of_between_val (nu := nuC) h hmu_le_nu hnu_le_lam
     hnu_ne_lam (Or.inr (Or.inr (Or.inl hmove)))
 
-lemma CPartition.isCMove_of_between_isCMove₄ {n : ℕ} {mu lam : CPartition n}
-    {nu : Nat.Partition (2 * n)} (h : mu ⋖ lam)
-    (hmu_le_nu : (mu : Nat.Partition (2 * n)) ≤ nu)
-    (hnu_le_lam : nu ≤ (lam : Nat.Partition (2 * n)))
-    (hnu_ne_lam : nu ≠ (lam : Nat.Partition (2 * n)))
-    (hmove : IsCMove₄ (lam : Nat.Partition (2 * n)) nu) :
-    IsCMove lam mu := by
-  let nuC : CPartition n := ⟨nu, isCPartition_of_isCMove₄ lam.property hmove⟩
-  exact CPartition.isCMove_of_between_val (nu := nuC) h hmu_le_nu hnu_le_lam
+lemma BDPartition.isBDMove_of_between_isBDMove₄ {N : ℕ} {mu lam : BDPartition N}
+    {nu : Nat.Partition N} (h : mu ⋖ lam)
+    (hmu_le_nu : (mu : Nat.Partition N) ≤ nu)
+    (hnu_le_lam : nu ≤ (lam : Nat.Partition N))
+    (hnu_ne_lam : nu ≠ (lam : Nat.Partition N))
+    (hmove : IsBDMove₄ (lam : Nat.Partition N) nu) :
+    IsBDMove lam mu := by
+  let nuC : BDPartition N := ⟨nu, isBDPartition_of_isBDMove₄ lam.property hmove⟩
+  exact BDPartition.isBDMove_of_between_val (nu := nuC) h hmu_le_nu hnu_le_lam
     hnu_ne_lam (Or.inr (Or.inr (Or.inr (Or.inl hmove))))
 
-lemma CPartition.isCMove_of_between_isCMove₅ {n : ℕ} {mu lam : CPartition n}
-    {nu : Nat.Partition (2 * n)} (h : mu ⋖ lam)
-    (hmu_le_nu : (mu : Nat.Partition (2 * n)) ≤ nu)
-    (hnu_le_lam : nu ≤ (lam : Nat.Partition (2 * n)))
-    (hnu_ne_lam : nu ≠ (lam : Nat.Partition (2 * n)))
-    (hmove : IsCMove₅ (lam : Nat.Partition (2 * n)) nu) :
-    IsCMove lam mu := by
-  let nuC : CPartition n := ⟨nu, isCPartition_of_isCMove₅ lam.property hmove⟩
-  exact CPartition.isCMove_of_between_val (nu := nuC) h hmu_le_nu hnu_le_lam
+lemma BDPartition.isBDMove_of_between_isBDMove₅ {N : ℕ} {mu lam : BDPartition N}
+    {nu : Nat.Partition N} (h : mu ⋖ lam)
+    (hmu_le_nu : (mu : Nat.Partition N) ≤ nu)
+    (hnu_le_lam : nu ≤ (lam : Nat.Partition N))
+    (hnu_ne_lam : nu ≠ (lam : Nat.Partition N))
+    (hmove : IsBDMove₅ (lam : Nat.Partition N) nu) :
+    IsBDMove lam mu := by
+  let nuC : BDPartition N := ⟨nu, isBDPartition_of_isBDMove₅ lam.property hmove⟩
+  exact BDPartition.isBDMove_of_between_val (nu := nuC) h hmu_le_nu hnu_le_lam
     hnu_ne_lam (Or.inr (Or.inr (Or.inr (Or.inr hmove))))
 
 
 end Nat.Partition
+
+
+
+
+
