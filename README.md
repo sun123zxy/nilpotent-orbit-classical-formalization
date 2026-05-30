@@ -38,7 +38,6 @@ We are working on a paper where we explain how the project is structured and des
   preserve C-admissibility.
 - `Dominance/CoverC/DoubleDrop.lean`: explicit C-type double-drop move wrappers.
 - `Dominance/CoverC/Forward.lean`: the forward C-type cover theorem.
-- `Dominance/CoverC/Reverse.lean`: currently formalized reverse fragments.
 - `Dominance/CoverC.lean`: thin entry module for the C-type cover files.
 - `Dominance/CoverBD/*`: the parallel B/D-type move, surplus, admissibility,
   double-drop, and forward-cover files.

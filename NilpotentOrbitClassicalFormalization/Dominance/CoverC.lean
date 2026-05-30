@@ -1,7 +1,7 @@
-import NilpotentOrbitClassicalFormalization.Dominance.CoverC.Reverse
+import NilpotentOrbitClassicalFormalization.Dominance.CoverC.Forward
 
 /-!
 # C-type dominance covers
 
-This module collects the C-type cover characterization files.
+This module collects the C-type forward cover characterization files.
 -/
