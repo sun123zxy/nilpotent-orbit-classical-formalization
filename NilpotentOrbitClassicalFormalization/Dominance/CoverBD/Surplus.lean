@@ -27,7 +27,7 @@ lemma BDPartition.two_lt_target_sub_two_of_odd_source {N : ℕ} {lam : BDPartiti
     (hs_odd : Odd ((lam : Nat.Partition N).rowLen s))
     (hlarge : (lam : Nat.Partition N).rowLen j + 2 < lam.val.rowLen s) :
     s < j - 2 := by
-  have hle : s + 2 ≤ j := by omega
+  have hle : s + 2 ≤ j := by linarith
   rcases lt_or_eq_of_le hle with hlt | hEq
   · omega
   · let m := (lam : Nat.Partition N).rowLen s - 1
@@ -204,12 +204,12 @@ lemma BDPartition.prefix_surplus₂_of_odd_source_adjacent {N : ℕ}
     ∀ k : ℕ, s < k → k ≤ j →
       (mu : Nat.Partition N).prefixSum k + 2 ≤ lam.val.prefixSum k := by
   intro k hsk hkj
-  have hk : k = j := by omega
+  have hk : k = j := by linarith
   subst k
   by_cases hi0_lt_s : i0 < s
   · exact prefix_surplus₂_of_first_lt_source hstrict hi0s hi0_lt_s hsrow
       hrowBefore j hsk le_rfl
-  · have hi0_eq_s : i0 = s := by omega
+  · have hi0_eq_s : i0 = s := by linarith
     subst i0
     have hone : (mu : Nat.Partition N).prefixSum j + 1 ≤ lam.val.prefixSum j :=
       (prefix_surplus_of_rowLen_le_before_target hi0s hrowBefore hstrict) j hsk le_rfl
@@ -283,7 +283,7 @@ lemma BDPartition.prefix_surplus₂_of_odd_source_nonadjacent {N : ℕ}
   by_cases hi0_lt_s : i0 < s
   · exact prefix_surplus₂_of_first_lt_source hstrict hi0s hi0_lt_s hsrow
       hrowBefore j (by omega) le_rfl
-  · have hi0_eq_s : i0 = s := by omega
+  · have hi0_eq_s : i0 = s := by linarith
     subst i0
     have hone : (mu : Nat.Partition N).prefixSum j + 1 ≤ lam.val.prefixSum j :=
       (prefix_surplus_of_rowLen_le_before_target hi0s hrowBefore hstrict) j
@@ -372,7 +372,7 @@ lemma BDPartition.prefix_surplus_right_of_even_target {N : ℕ}
     ∀ k : ℕ, j < k → k ≤ j + 1 →
       (mu : Nat.Partition N).prefixSum k + 1 ≤ lam.val.prefixSum k := by
   intro k hjk hkj
-  have hk : k = j + 1 := by omega
+  have hk : k = j + 1 := by linarith
   subst k
   by_contra hnot
   have hle := hmu_le_lam (j + 1)
@@ -405,7 +405,7 @@ lemma BDPartition.prefix_surplus_right_of_even_target {N : ℕ}
     omega
   have hmu_above : ∀ r : ℕ, r < j + 1 → m < (mu : Nat.Partition N).rowLen r := by
     intro r hr
-    have hrj : r ≤ j := by omega
+    have hrj : r ≤ j := by linarith
     have hle_row : (mu : Nat.Partition N).rowLen j ≤
         (mu : Nat.Partition N).rowLen r :=
       (YoungDiagram.ofPartition (mu : Nat.Partition N)).rowLen_anti r j hrj

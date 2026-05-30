@@ -19,7 +19,7 @@ theorem isCoverBoxDrop_of_isCMove₁ {N : ℕ} {lam mu : Nat.Partition N}
     by_cases hs1t : s + 1 = t
     · rw [hs1t]
       omega
-    · have hs1s : s + 1 ≠ s := by omega
+    · have hs1s : s + 1 ≠ s := by linarith
       have hrow := hrest (s + 1) hs1s hs1t
       rw [hrow] at hanti
       omega
@@ -36,7 +36,7 @@ theorem isCoverBoxDrop_of_isCMove₁ {N : ℕ} {lam mu : Nat.Partition N}
       have hrow := hrest (t - 1) hpreds hpredt
       rw [ht, hrow] at hanti
       omega
-  have hgap : lam.rowLen t + 1 < lam.rowLen s := by omega
+  have hgap : lam.rowLen t + 1 < lam.rowLen s := by linarith
   refine ⟨s, t, hst, hsource, htarget, hgap, ?_, ?_⟩
   · right
     omega

@@ -26,7 +26,7 @@ lemma CPartition.two_lt_target_sub_two_of_even_source {n : ℕ} {lam : CPartitio
     (hseven : Even ((lam : Nat.Partition (2 * n)).rowLen s))
     (hlarge : (lam : Nat.Partition (2 * n)).rowLen j + 2 < lam.val.rowLen s) :
     s < j - 2 := by
-  have hle : s + 2 ≤ j := by omega
+  have hle : s + 2 ≤ j := by linarith
   rcases lt_or_eq_of_le hle with hlt | hEq
   · omega
   · let m := (lam : Nat.Partition (2 * n)).rowLen s - 1
@@ -202,12 +202,12 @@ lemma CPartition.prefix_surplus₂_of_even_source_adjacent {n : ℕ}
     ∀ k : ℕ, s < k → k ≤ j →
       (mu : Nat.Partition (2 * n)).prefixSum k + 2 ≤ lam.val.prefixSum k := by
   intro k hsk hkj
-  have hk : k = j := by omega
+  have hk : k = j := by linarith
   subst k
   by_cases hi0_lt_s : i0 < s
   · exact prefix_surplus₂_of_first_lt_source hstrict hi0s hi0_lt_s hsrow
       hrowBefore j hsk le_rfl
-  · have hi0_eq_s : i0 = s := by omega
+  · have hi0_eq_s : i0 = s := by linarith
     subst i0
     have hone : (mu : Nat.Partition (2 * n)).prefixSum j + 1 ≤ lam.val.prefixSum j :=
       (prefix_surplus_of_rowLen_le_before_target hi0s hrowBefore hstrict) j hsk le_rfl
@@ -262,7 +262,7 @@ lemma CPartition.prefix_surplus₂_of_even_source_nonadjacent {n : ℕ}
   by_cases hi0_lt_s : i0 < s
   · exact prefix_surplus₂_of_first_lt_source hstrict hi0s hi0_lt_s hsrow
       hrowBefore j (by omega) le_rfl
-  · have hi0_eq_s : i0 = s := by omega
+  · have hi0_eq_s : i0 = s := by linarith
     subst i0
     have hone : (mu : Nat.Partition (2 * n)).prefixSum j + 1 ≤ lam.val.prefixSum j :=
       (prefix_surplus_of_rowLen_le_before_target hi0s hrowBefore hstrict) j
@@ -307,7 +307,7 @@ lemma CPartition.prefix_surplus_right_of_odd_target {n : ℕ} {mu lam : CPartiti
     ∀ k : ℕ, j < k → k ≤ j + 1 →
       (mu : Nat.Partition (2 * n)).prefixSum k + 1 ≤ lam.val.prefixSum k := by
   intro k hjk hkj
-  have hk : k = j + 1 := by omega
+  have hk : k = j + 1 := by linarith
   subst k
   by_contra hnot
   have hle := hmu_le_lam (j + 1)

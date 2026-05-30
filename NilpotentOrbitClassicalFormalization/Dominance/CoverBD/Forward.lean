@@ -194,7 +194,7 @@ lemma BDPartition.isBDMove_of_exact_branch_of_source_surplus {N : ℕ}
     have hmiddle_right : ∀ k : ℕ, j < k → k ≤ j + 1 →
         (mu : Nat.Partition N).prefixSum k + 1 ≤ lam.val.prefixSum k := by
       intro k hjk hkj
-      have hk : k = j + 1 := by omega
+      have hk : k = j + 1 := by linarith
       subst k
       exact prefixSum_succ_add_one_le_of_prefixSum_add_two_le_of_rowLen_le_add_one
         (hmiddle_two j (by omega) le_rfl) hrowj

@@ -293,7 +293,7 @@ lemma exists_plateau_source {n : ℕ} (lam : Nat.Partition n) {i0 j : ℕ}
     omega
   · have hsnext_lt_j : s + 1 < j := lt_of_le_of_ne (Nat.succ_le_iff.mpr hsj) hsnext_j
     have hsnext_le_jpred : s + 1 ≤ j - 1 := Nat.le_sub_one_of_lt hsnext_lt_j
-    exact Nat.findGreatest_is_greatest (P := P) (by omega : s < s + 1)
+    exact Nat.findGreatest_is_greatest (P := P) (by linarith : s < s + 1)
       hsnext_le_jpred hPnext
 
 /-- The bottom row of the constant-height plateau starting at a first source row. -/

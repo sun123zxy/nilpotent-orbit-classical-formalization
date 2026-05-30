@@ -31,8 +31,8 @@ lemma isBDPartition_of_isBDMove₁ {N : ℕ} {lam mu : Nat.Partition N}
     exact rowLens_count_even_of_isBDPartition hlam hm_even
   by_cases hm : m = lam.rowLen t + 1
   · let base := (Finset.range K).filter fun r => lam.rowLen r = m
-    have hsrow : mu.rowLen s = m := by omega
-    have htrow : mu.rowLen t = m := by omega
+    have hsrow : mu.rowLen s = m := by linarith
+    have htrow : mu.rowLen t = m := by linarith
     have hsK : s ∈ Finset.range K := by
       rw [Finset.mem_range]
       have hscol : s < (YoungDiagram.ofPartition mu).colLen 0 := by
@@ -52,7 +52,7 @@ lemma isBDPartition_of_isBDMove₁ {N : ℕ} {lam mu : Nat.Partition N}
     have hs_not_base : s ∉ base := by
       intro hmem
       have hrow := (Finset.mem_filter.mp hmem).2
-      omega
+      linarith
     have ht_not_base : t ∉ base := by
       simp [base, hm]
     have hts : t ≠ s := ne_of_gt hst
@@ -72,7 +72,7 @@ lemma isBDPartition_of_isBDMove₁ {N : ℕ} {lam mu : Nat.Partition N}
           · exact Or.inr (Or.inl hrt)
           · have hrlam := hrest r hrs hrt
             exact Or.inr (Or.inr (by
-              exact Finset.mem_filter.mpr ⟨hrK, by omega⟩))
+              exact Finset.mem_filter.mpr ⟨hrK, by linarith⟩))
       · rintro (rfl | rfl | hrbase)
         · exact ⟨hsK, hsrow⟩
         · exact ⟨htK, htrow⟩
@@ -80,12 +80,12 @@ lemma isBDPartition_of_isBDMove₁ {N : ℕ} {lam mu : Nat.Partition N}
           rcases Finset.mem_filter.mp hrbase with ⟨hrK, hrlam⟩
           by_cases hrs : r = s
           · subst r
-            omega
+            linarith
           · by_cases hrt : r = t
             · subst r
-              omega
+              linarith
             · have hrlam' := hrest r hrs hrt
-              exact ⟨hrK, by omega⟩
+              exact ⟨hrK, by linarith⟩
     rw [hfilter]
     rw [Finset.card_insert_of_notMem hs_not_insert]
     rw [Finset.card_insert_of_notMem ht_not_base]
@@ -104,13 +104,13 @@ lemma isBDPartition_of_isBDMove₁ {N : ℕ} {lam mu : Nat.Partition N}
         by_cases hrs : r = s
         · subst r
           exfalso
-          exact hm (by omega)
+          exact hm (by linarith)
         · by_cases hrt : r = t
           · subst r
             exfalso
-            exact hm (by omega)
+            exact hm (by linarith)
           · have hrlam := hrest r hrs hrt
-            omega
+            linarith
       · rintro ⟨hrK, hr⟩
         refine ⟨hrK, ?_⟩
         by_cases hrs : r = s
@@ -126,7 +126,7 @@ lemma isBDPartition_of_isBDMove₁ {N : ℕ} {lam mu : Nat.Partition N}
             rcases ht_odd with ⟨b, hb⟩
             omega
           · have hrlam := hrest r hrs hrt
-            omega
+            linarith
     rw [hfilter]
     exact heven_lam
 
@@ -172,7 +172,7 @@ lemma isBDPartition_of_isBDMove₂ {N : ℕ} {lam mu : Nat.Partition N}
           rcases ht_odd with ⟨b, hb⟩
           omega
         · have hrlam := hrest r hrs hrt
-          omega
+          linarith
     · rintro ⟨hrK, hr⟩
       refine ⟨hrK, ?_⟩
       by_cases hrs : r = s
@@ -188,7 +188,7 @@ lemma isBDPartition_of_isBDMove₂ {N : ℕ} {lam mu : Nat.Partition N}
           rcases ht_odd with ⟨b, hb⟩
           omega
         · have hrlam := hrest r hrs hrt
-          omega
+          linarith
   rw [hfilter]
   exact heven_lam
 
@@ -239,7 +239,7 @@ lemma isBDPartition_of_isBDMove₃ {N : ℕ} {lam mu : Nat.Partition N}
       intro hmem
       have hrow := (Finset.mem_filter.mp hmem).2
       omega
-    have htt1 : t ≠ t + 1 := by omega
+    have htt1 : t ≠ t + 1 := by linarith
     have hfilter_lam :
         ((Finset.range K).filter fun r => lam.rowLen r = m) =
           insert t (insert (t + 1) base) := by
@@ -259,10 +259,10 @@ lemma isBDPartition_of_isBDMove₃ {N : ℕ} {lam mu : Nat.Partition N}
               omega
             · have hrmu := hrest r hrs hrt hrt1
               exact Or.inr (Or.inr (by
-                exact Finset.mem_filter.mpr ⟨hrK, by omega⟩))
+                exact Finset.mem_filter.mpr ⟨hrK, by linarith⟩))
       · rintro (rfl | rfl | hrbase)
         · exact ⟨htK, hm.symm⟩
-        · exact ⟨ht1K, by omega⟩
+        · exact ⟨ht1K, by linarith⟩
         · change r ∈ (Finset.range K).filter (fun r => mu.rowLen r = m) at hrbase
           rcases Finset.mem_filter.mp hrbase with ⟨hrK, hrmu⟩
           by_cases hrs : r = s
@@ -278,7 +278,7 @@ lemma isBDPartition_of_isBDMove₃ {N : ℕ} {lam mu : Nat.Partition N}
               · subst r
                 omega
               · have hrlam := hrest r hrs hrt hrt1
-                exact ⟨hrK, by omega⟩
+                exact ⟨hrK, by linarith⟩
     have hcard_lam :
         ((Finset.range K).filter fun r => lam.rowLen r = m).card =
           base.card + 2 := by
@@ -321,7 +321,7 @@ lemma isBDPartition_of_isBDMove₃ {N : ℕ} {lam mu : Nat.Partition N}
               rcases ht_even with ⟨b, hb⟩
               omega
             · have hrlam := hrest r hrs hrt hrt1
-              omega
+              linarith
       · rintro ⟨hrK, hr⟩
         refine ⟨hrK, ?_⟩
         by_cases hrs : r = s
@@ -337,9 +337,9 @@ lemma isBDPartition_of_isBDMove₃ {N : ℕ} {lam mu : Nat.Partition N}
           · by_cases hrt1 : r = t + 1
             · subst r
               exfalso
-              exact hm (by omega)
+              exact hm (by linarith)
             · have hrlam := hrest r hrs hrt hrt1
-              omega
+              linarith
     rw [hfilter]
     exact heven_lam
 
@@ -390,7 +390,7 @@ lemma isBDPartition_of_isBDMove₄ {N : ℕ} {lam mu : Nat.Partition N}
       intro hmem
       have hrow := (Finset.mem_filter.mp hmem).2
       omega
-    have hss1 : s ≠ s + 1 := by omega
+    have hss1 : s ≠ s + 1 := by linarith
     have hfilter_lam :
         ((Finset.range K).filter fun r => lam.rowLen r = m) =
           insert s (insert (s + 1) base) := by
@@ -410,10 +410,10 @@ lemma isBDPartition_of_isBDMove₄ {N : ℕ} {lam mu : Nat.Partition N}
               omega
             · have hrmu := hrest r hrs hrs1 hrt
               exact Or.inr (Or.inr (by
-                exact Finset.mem_filter.mpr ⟨hrK, by omega⟩))
+                exact Finset.mem_filter.mpr ⟨hrK, by linarith⟩))
       · rintro (rfl | rfl | hrbase)
         · exact ⟨hsK, hm.symm⟩
-        · exact ⟨hs1K, by omega⟩
+        · exact ⟨hs1K, by linarith⟩
         · change r ∈ (Finset.range K).filter (fun r => mu.rowLen r = m) at hrbase
           rcases Finset.mem_filter.mp hrbase with ⟨hrK, hrmu⟩
           by_cases hrs : r = s
@@ -429,7 +429,7 @@ lemma isBDPartition_of_isBDMove₄ {N : ℕ} {lam mu : Nat.Partition N}
                 rcases ht_odd with ⟨b, hb⟩
                 omega
               · have hrlam := hrest r hrs hrs1 hrt
-                exact ⟨hrK, by omega⟩
+                exact ⟨hrK, by linarith⟩
     have hcard_lam :
         ((Finset.range K).filter fun r => lam.rowLen r = m).card =
           base.card + 2 := by
@@ -472,7 +472,7 @@ lemma isBDPartition_of_isBDMove₄ {N : ℕ} {lam mu : Nat.Partition N}
               rcases ht_odd with ⟨b, hb⟩
               omega
             · have hrlam := hrest r hrs hrs1 hrt
-              omega
+              linarith
       · rintro ⟨hrK, hr⟩
         refine ⟨hrK, ?_⟩
         by_cases hrs : r = s
@@ -482,7 +482,7 @@ lemma isBDPartition_of_isBDMove₄ {N : ℕ} {lam mu : Nat.Partition N}
         · by_cases hrs1 : r = s + 1
           · subst r
             exfalso
-            exact hm (by omega)
+            exact hm (by linarith)
           · by_cases hrt : r = t
             · subst r
               exfalso
@@ -490,7 +490,7 @@ lemma isBDPartition_of_isBDMove₄ {N : ℕ} {lam mu : Nat.Partition N}
               rcases ht_odd with ⟨b, hb⟩
               omega
             · have hrlam := hrest r hrs hrs1 hrt
-              omega
+              linarith
     rw [hfilter]
     exact heven_lam
 
@@ -541,7 +541,7 @@ lemma isBDPartition_of_isBDMove₅ {N : ℕ} {lam mu : Nat.Partition N}
       intro hmem
       have hrow := (Finset.mem_filter.mp hmem).2
       omega
-    have hss1 : s ≠ s + 1 := by omega
+    have hss1 : s ≠ s + 1 := by linarith
     have hfilter_lam :
         ((Finset.range K).filter fun r => lam.rowLen r = m) =
           insert s (insert (s + 1) base) := by
@@ -563,10 +563,10 @@ lemma isBDPartition_of_isBDMove₅ {N : ℕ} {lam mu : Nat.Partition N}
                 omega
               · have hrmu := hrest r hrs hrs1 hrt hrt1
                 exact Or.inr (Or.inr (by
-                  exact Finset.mem_filter.mpr ⟨hrK, by omega⟩))
+                  exact Finset.mem_filter.mpr ⟨hrK, by linarith⟩))
       · rintro (rfl | rfl | hrbase)
         · exact ⟨hsK, hms.symm⟩
-        · exact ⟨hs1K, by omega⟩
+        · exact ⟨hs1K, by linarith⟩
         · change r ∈ (Finset.range K).filter (fun r => mu.rowLen r = m) at hrbase
           rcases Finset.mem_filter.mp hrbase with ⟨hrK, hrmu⟩
           by_cases hrs : r = s
@@ -584,7 +584,7 @@ lemma isBDPartition_of_isBDMove₅ {N : ℕ} {lam mu : Nat.Partition N}
                   exfalso
                   omega
                 · have hrlam := hrest r hrs hrs1 hrt hrt1
-                  exact ⟨hrK, by omega⟩
+                  exact ⟨hrK, by linarith⟩
     have hcard_lam :
         ((Finset.range K).filter fun r => lam.rowLen r = m).card =
           base.card + 2 := by
@@ -626,7 +626,7 @@ lemma isBDPartition_of_isBDMove₅ {N : ℕ} {lam mu : Nat.Partition N}
         intro hmem
         have hrow := (Finset.mem_filter.mp hmem).2
         omega
-      have htt1 : t ≠ t + 1 := by omega
+      have htt1 : t ≠ t + 1 := by linarith
       have hfilter_lam :
           ((Finset.range K).filter fun r => lam.rowLen r = m) =
             insert t (insert (t + 1) base) := by
@@ -648,10 +648,10 @@ lemma isBDPartition_of_isBDMove₅ {N : ℕ} {lam mu : Nat.Partition N}
                   omega
                 · have hrmu := hrest r hrs hrs1 hrt hrt1
                   exact Or.inr (Or.inr (by
-                    exact Finset.mem_filter.mpr ⟨hrK, by omega⟩))
+                    exact Finset.mem_filter.mpr ⟨hrK, by linarith⟩))
         · rintro (rfl | rfl | hrbase)
           · exact ⟨htK, hmt.symm⟩
-          · exact ⟨ht1K, by omega⟩
+          · exact ⟨ht1K, by linarith⟩
           · change r ∈ (Finset.range K).filter (fun r => mu.rowLen r = m) at hrbase
             rcases Finset.mem_filter.mp hrbase with ⟨hrK, hrmu⟩
             by_cases hrs : r = s
@@ -669,7 +669,7 @@ lemma isBDPartition_of_isBDMove₅ {N : ℕ} {lam mu : Nat.Partition N}
                   · subst r
                     omega
                   · have hrlam := hrest r hrs hrs1 hrt hrt1
-                    exact ⟨hrK, by omega⟩
+                    exact ⟨hrK, by linarith⟩
       have hcard_lam :
           ((Finset.range K).filter fun r => lam.rowLen r = m).card =
             base.card + 2 := by
@@ -718,7 +718,7 @@ lemma isBDPartition_of_isBDMove₅ {N : ℕ} {lam mu : Nat.Partition N}
                   rcases ht_even with ⟨b, hb⟩
                   omega
                 · have hrlam := hrest r hrs hrs1 hrt hrt1
-                  omega
+                  linarith
         · rintro ⟨hrK, hr⟩
           refine ⟨hrK, ?_⟩
           by_cases hrs : r = s
@@ -728,7 +728,7 @@ lemma isBDPartition_of_isBDMove₅ {N : ℕ} {lam mu : Nat.Partition N}
           · by_cases hrs1 : r = s + 1
             · subst r
               exfalso
-              exact hms (by omega)
+              exact hms (by linarith)
             · by_cases hrt : r = t
               · subst r
                 exfalso
@@ -736,9 +736,9 @@ lemma isBDPartition_of_isBDMove₅ {N : ℕ} {lam mu : Nat.Partition N}
               · by_cases hrt1 : r = t + 1
                 · subst r
                   exfalso
-                  exact hmt (by omega)
+                  exact hmt (by linarith)
                 · have hrlam := hrest r hrs hrs1 hrt hrt1
-                  omega
+                  linarith
       rw [hfilter]
       exact heven_lam
 

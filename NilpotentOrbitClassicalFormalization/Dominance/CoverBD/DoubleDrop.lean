@@ -95,19 +95,19 @@ lemma isBDMove₃_of_eq_doubleBoxDrop_source_pairTarget {N : ℕ}
   · change (boxDropPartition rho hst1 hsource₂ htarget₂ hgap₂).rowLen t =
       lam.rowLen t + 1
     rw [rowLen_boxDropPartition rho hst1 hsource₂ htarget₂ hgap₂]
-    rw [if_neg (ne_of_gt hst), if_neg (by omega : t ≠ t + 1)]
+    rw [if_neg (ne_of_gt hst), if_neg (by linarith : t ≠ t + 1)]
     dsimp [rho]
     rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
     simp [ne_of_gt hst]
   · change (boxDropPartition rho hst1 hsource₂ htarget₂ hgap₂).rowLen (t + 1) =
       lam.rowLen (t + 1) + 1
     rw [rowLen_boxDropPartition rho hst1 hsource₂ htarget₂ hgap₂]
-    have ht1s : t + 1 ≠ s := by omega
+    have ht1s : t + 1 ≠ s := by linarith
     rw [if_neg ht1s, if_pos rfl]
     change rho.rowLen (t + 1) + 1 = lam.rowLen (t + 1) + 1
     dsimp [rho]
     rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
-    have ht1t : t + 1 ≠ t := by omega
+    have ht1t : t + 1 ≠ t := by linarith
     rw [if_neg ht1s, if_neg ht1t]
   · intro k hks hkt hkt1
     change (boxDropPartition rho hst1 hsource₂ htarget₂ hgap₂).rowLen k =
@@ -149,16 +149,16 @@ lemma isBDMove₄_of_eq_doubleBoxDrop_sourcePair_target {N : ℕ}
     rw [show rho.rowLen s = lam.rowLen s by
       dsimp [rho]
       rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
-      have hss1 : s ≠ s + 1 := by omega
-      have hst_ne : s ≠ t := by omega
+      have hss1 : s ≠ s + 1 := by linarith
+      have hst_ne : s ≠ t := by linarith
       rw [if_neg hss1, if_neg hst_ne]]
-    have hpos : 0 < lam.rowLen s := by omega
+    have hpos : 0 < lam.rowLen s := by linarith
     omega
   · change lam.rowLen (s + 1) =
       (boxDropPartition rho hslt hsource₂ htarget₂ hgap₂).rowLen (s + 1) + 1
     rw [rowLen_boxDropPartition rho hslt hsource₂ htarget₂ hgap₂]
-    have hs1s : s + 1 ≠ s := by omega
-    have hs1t : s + 1 ≠ t := by omega
+    have hs1s : s + 1 ≠ s := by linarith
+    have hs1t : s + 1 ≠ t := by linarith
     rw [if_neg hs1s, if_neg hs1t]
     change lam.rowLen (s + 1) = rho.rowLen (s + 1) + 1
     dsimp [rho]
@@ -166,7 +166,7 @@ lemma isBDMove₄_of_eq_doubleBoxDrop_sourcePair_target {N : ℕ}
     rw [if_pos rfl]
     have hpos : 0 < lam.rowLen (s + 1) := by
       rw [← hspair]
-      omega
+      linarith
     omega
   · change (boxDropPartition rho hslt hsource₂ htarget₂ hgap₂).rowLen t =
       lam.rowLen t + 2
@@ -218,16 +218,16 @@ lemma isBDMove₅_of_eq_doubleBoxDrop_sourcePair_targetPair {N : ℕ}
     rw [show rho.rowLen s = lam.rowLen s by
       dsimp [rho]
       rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
-      have hss1 : s ≠ s + 1 := by omega
-      have hst_ne : s ≠ t := by omega
+      have hss1 : s ≠ s + 1 := by linarith
+      have hst_ne : s ≠ t := by linarith
       rw [if_neg hss1, if_neg hst_ne]]
-    have hpos : 0 < lam.rowLen s := by omega
+    have hpos : 0 < lam.rowLen s := by linarith
     omega
   · change lam.rowLen (s + 1) =
       (boxDropPartition rho hslt1 hsource₂ htarget₂ hgap₂).rowLen (s + 1) + 1
     rw [rowLen_boxDropPartition rho hslt1 hsource₂ htarget₂ hgap₂]
-    have hs1s : s + 1 ≠ s := by omega
-    have hs1t1 : s + 1 ≠ t + 1 := by omega
+    have hs1s : s + 1 ≠ s := by linarith
+    have hs1t1 : s + 1 ≠ t + 1 := by linarith
     rw [if_neg hs1s, if_neg hs1t1]
     change lam.rowLen (s + 1) = rho.rowLen (s + 1) + 1
     dsimp [rho]
@@ -235,13 +235,13 @@ lemma isBDMove₅_of_eq_doubleBoxDrop_sourcePair_targetPair {N : ℕ}
     rw [if_pos rfl]
     have hpos : 0 < lam.rowLen (s + 1) := by
       rw [← hspair]
-      omega
+      linarith
     omega
   · change (boxDropPartition rho hslt1 hsource₂ htarget₂ hgap₂).rowLen t =
       lam.rowLen t + 1
     rw [rowLen_boxDropPartition rho hslt1 hsource₂ htarget₂ hgap₂]
-    have hts : t ≠ s := by omega
-    have htt1 : t ≠ t + 1 := by omega
+    have hts : t ≠ s := by linarith
+    have htt1 : t ≠ t + 1 := by linarith
     rw [if_neg hts, if_neg htt1]
     dsimp [rho]
     rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
@@ -249,13 +249,13 @@ lemma isBDMove₅_of_eq_doubleBoxDrop_sourcePair_targetPair {N : ℕ}
   · change (boxDropPartition rho hslt1 hsource₂ htarget₂ hgap₂).rowLen (t + 1) =
       lam.rowLen (t + 1) + 1
     rw [rowLen_boxDropPartition rho hslt1 hsource₂ htarget₂ hgap₂]
-    have ht1s : t + 1 ≠ s := by omega
+    have ht1s : t + 1 ≠ s := by linarith
     rw [if_neg ht1s, if_pos rfl]
     change rho.rowLen (t + 1) + 1 = lam.rowLen (t + 1) + 1
     dsimp [rho]
     rw [rowLen_boxDropPartition lam hst hsource₁ htarget₁ hgap₁]
-    have ht1s1 : t + 1 ≠ s + 1 := by omega
-    have ht1t : t + 1 ≠ t := by omega
+    have ht1s1 : t + 1 ≠ s + 1 := by linarith
+    have ht1t : t + 1 ≠ t := by linarith
     rw [if_neg ht1s1, if_neg ht1t]
   · intro k hks hks1 hkt hkt1
     change (boxDropPartition rho hslt1 hsource₂ htarget₂ hgap₂).rowLen k =

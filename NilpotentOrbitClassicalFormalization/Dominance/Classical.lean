@@ -348,7 +348,7 @@ lemma rowLens_count_eq_sub_of_plateau {N : ℕ} (p : Nat.Partition N)
     (hnext : p.rowLen b < m) :
     ((YoungDiagram.ofPartition p).rowLens.count m) = b - a := by
   rw [rowLens_count_eq_card_filter p m]
-  have hmpos : 0 < m := by omega
+  have hmpos : 0 < m := by linarith
   have hfilter :
       ((Finset.range ((YoungDiagram.ofPartition p).colLen 0)).filter
         fun r => p.rowLen r = m) = Finset.Ico a b := by
@@ -461,7 +461,7 @@ lemma exists_plateau_start {N : ℕ} (p : Nat.Partition N) {k : ℕ} :
           ¬P (a - 1) :=
         Nat.find_min (show ∃ r, P r from ⟨k, le_rfl, rfl⟩) hapred_lt
       have hle : p.rowLen k ≤ p.rowLen (a - 1) := by
-        have hpred_le_a : a - 1 ≤ a := by omega
+        have hpred_le_a : a - 1 ≤ a := by linarith
         have hrow : p.rowLen a ≤ p.rowLen (a - 1) :=
           (YoungDiagram.ofPartition p).rowLen_anti (a - 1) a hpred_le_a
         rw [haP.2] at hrow
